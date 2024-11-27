@@ -1,0 +1,14 @@
+# data analysis
+pymongo
+# fastapi
+fastapi
+pydantic
+uvicorn
+jinja2
+python-multipart
+pydantic-settings
+beanie
+motor
+faker
+# pandas
+# torch --index-url https://download.pytorch.org/whl/cu118

@@ -1,0 +1,20 @@
+services:
+  fastapi:
+    build:
+      context: .
+      args:
+        GIT_BRANCH_NAME: ${GIT_BRANCH_NAME}
+        APP_DIR_NAME: ${APP_DIR_NAME}      
+        GIT_URI: ${GIT_URI}      
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    depends_on:
+      - db_mongodb_7
+    command: sleep infinity
+  db_mongodb_7:
+    image: mongo:7
+    restart: always
+    ports:
+      - 27017:27017
+    command: mongod --bind_ip 0.0.0.0      
