@@ -1,0 +1,62 @@
+{% extends "templates/main_template.html"%}
+
+{% block title %}
+Errors
+{% endblock %}
+<!-- main -->
+{% block main_container %}
+<div class="row row-cols-1 row-cols-md-2 align-items-md-center g-2">
+    <div class="col d-flex flex-column align-items-start gap-2">
+        <h4 class="fw-bold text-body-emphasis">Source와 DB 포함된 Docker 공유로 개발 환경 통일</h4>
+        <p class="text-body-secondary">
+            Docker를 통해 소스 코드와 데이터베이스를 한곳에서 관리함으로써 개발 환경을 일관되게 유지할 수 있습니다.
+            이는 협업이 용이해지고, 빠른 배포와 테스트 환경 구축에 큰 도움.
+        </p>
+        <!-- YouTube Video Embed with More Rounded Corners 
+        <div class="ratio ratio-16x9" style="border-radius: 10px; overflow: hidden;">
+            <iframe src="https://www.youtube.com/embed/qTUGWkJEMqw?si=0ooFr2E-QtR88yo6" title="YouTube video"
+                allowfullscreen></iframe>
+        </div>
+    -->
+    </div>
+
+    <div class="col">
+        <div class="row row-cols-1 row-cols-sm-2 g-4">
+            <div class="col d-flex flex-column gap-2">
+                <div
+                    class="feature-icon-small d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient fs-4 rounded-3">
+                    <i class="bi bi-gear-fill"></i>
+                </div>
+                <h5 class="fw-semibold mb-0 text-body-emphasis">Developer</h5>
+                <p class="text-body-secondary">
+                    통일된 개발 환경을 통해 팀 내에서 일관된 코딩 스타일과 버전 관리를 할 수 있으며, 배포와 테스트가 간소화.
+                </p>
+            </div>
+
+            <div class="col d-flex flex-column gap-2">
+                <div
+                    class="feature-icon-small d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient fs-4 rounded-3">
+                    <i class="bi bi-mortarboard-fill"></i>
+                </div>
+                <h5 class="fw-semibold mb-0 text-body-emphasis">Educator</h5>
+                <p class="text-body-secondary">
+                    동일한 환경에서 수업을 진행할 수 있어, 교육 중 발생할 수 있는 환경 차이로 인한 문제를 방지하고 자료 배포가 용이.
+                </p>
+            </div>
+
+            <div class="col d-flex flex-column gap-2">
+                <div
+                    class="feature-icon-small d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient fs-4 rounded-3">
+                    <i class="bi bi-collection"></i>
+                </div>
+                <h5 class="fw-semibold mb-0 text-body-emphasis">Communicator</h5>
+                <p class="text-body-secondary">
+                    새로운 기술이나 도구에 대한 토론 및 스터디를 일관된 환경에서 진행할 수 있어, 커뮤니케이션과 협업이 더욱 효율화.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
