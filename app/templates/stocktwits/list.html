@@ -17,7 +17,7 @@ Member List
       <input class="form-control" placeholder="Enter Search!" name="word" value="{{request._query_params.word}}">
     </div>
     <div class="col-4">
-      <button type="submit" class="btn btn-primary" formaction="/stockprice/list" formmethod="get">
+      <button type="submit" class="btn btn-primary" formaction="/stocktwits/list" formmethod="get">
         Search <span class="badge bg-success" id="">{{pagination.total_records}}</span>
       </button>
     </div>
@@ -40,8 +40,8 @@ Member List
         <td>
           {{user.SYMBOL}}
         </td>
-        <td>{{user.CLOSE}}</td>
-        <td>{{user.VOLUME}}</td>
+        <td>{{user.CONTENT}}</td>
+        <td></td>
         <td></td>
         <td></td>
       </tr>

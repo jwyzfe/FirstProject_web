@@ -7,6 +7,8 @@ from pydantic_settings import BaseSettings
 
 
 from app.models.users import User
+from app.models.stockprice import Stockprice
+from app.models.stocktwits import Stocktwits
 
 import os
 class Settings(BaseSettings):
@@ -14,7 +16,7 @@ class Settings(BaseSettings):
 
     async def initialize_database(self):
         client = AsyncIOMotorClient(self.DATABASE_URL)
-        await init_beanie(database=client.get_default_database(), document_models=[User])
+        await init_beanie(database=client.get_default_database(), document_models=[User, Stockprice, Stocktwits])
 
     class Config:
         env_file = os.path.join("app",".env")
@@ -143,7 +145,7 @@ class Database:
                                              , conditions:dict, page_number=1
                                              , records_per_page=10, pages_per_block=5
                                              , sorted = '-'
-                                             , sort_field:str = 'create_date') -> [Any]:
+                                             , sort_field:str = 'CREATED_AT') -> [Any]:
         try:
             total = await self.model.find(conditions).count()
         except:

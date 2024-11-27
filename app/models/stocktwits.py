@@ -5,16 +5,16 @@ from datetime import datetime
 from pydantic import BaseModel, EmailStr, Field
 
 
-class Stockprice(Document):
+class Stocktwits(Document):
     SYMBOL: str = None
-    CLOSE: float = None
-    VOLUME: int = None
+    CONTENT: str = None
+    # VOLUME: int = None
     # roles :List[str] = ['MEMBER',]
     CREATED_AT: datetime = Field(default_factory=datetime.now)
     # last_access_date: datetime = Field(default_factory=datetime.now)
 
     class Settings:
-        name = "COL_STOCKPRICE_DAILY"
+        name = "COL_SCRAPPING_STOCKTWITS_COMMENT_DAILY"
 
     # class Config:
     #     json_schema_extra = {
