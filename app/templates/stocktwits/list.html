@@ -26,24 +26,31 @@ Member List
     <thead>
       <tr>
         <th>No.</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Authority</th>
-        <th>Last Access Date </th>
+        <th>Symbol</th>
+        <th>Content</th>
+        <th>Datetime</th>
+        <th>Links</th>
         <th>Create Date</th>
       </tr>
     </thead>
     <tbody>
-      {% for user in users %}
+      {% for comment in comments %}
       <tr>
         <td>{{pagination.start_record_number + loop.index}}</td>
         <td>
-          {{user.SYMBOL}}
+          <a href="/stocktwits/read/{{comment.id}}" class="text-decoration-none">{{comment.SYMBOL}}</a>
         </td>
-        <td>{{user.CONTENT}}</td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td>{{comment.CONTENT}}</td>
+        <td>{{comment.DATETIME}}</td>
+        <td>
+          {% for link in comment.LINKS %}
+              <a href="{{ link }}" target="_blank" class="text-decoration-none me-2">{{ link | truncate(30, true, '...') }}</a>
+              {% if not loop.last %}<br>{% endif %}
+          {% else %}
+              -  {# 링크가 없는 경우 표시 #}
+          {% endfor %}
+        </td>
+        <td>{{comment.CREATED_AT}}</td>
       </tr>
       {% endfor %}
     </tbody>

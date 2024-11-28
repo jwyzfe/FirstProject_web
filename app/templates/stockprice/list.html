@@ -26,24 +26,34 @@ Member List
     <thead>
       <tr>
         <th>No.</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Authority</th>
-        <th>Last Access Date </th>
+        <th>Symbol</th>
+        <th>Date</th>
+        <th>Open</th>
+        <th>High</th>
+        <th>Low</th>
+        <th>Close</th>
+        <th>Volume</th>
+        <th>Dividends</th>
+        <th>Stock splits</th>
         <th>Create Date</th>
       </tr>
     </thead>
     <tbody>
-      {% for user in users %}
+      {% for stockprice in stockprices %}
       <tr>
         <td>{{pagination.start_record_number + loop.index}}</td>
         <td>
-          {{user.SYMBOL}}
+          <a href="/stockprice/read/{{stockprice.id}}" class="text-decoration-none">{{stockprice.SYMBOL}}</a>
         </td>
-        <td>{{user.CLOSE}}</td>
-        <td>{{user.VOLUME}}</td>
-        <td></td>
-        <td></td>
+        <td>{{stockprice.DATE}}</td>
+        <td>{{ '%.3f' | format(stockprice.OPEN) }}</td>
+        <td>{{ '%.3f' | format(stockprice.HIGH) }}</td>
+        <td>{{ '%.3f' | format(stockprice.LOW) }}</td>
+        <td>{{ '%.3f' | format(stockprice.CLOSE) }}</td>
+        <td>{{stockprice.VOLUME}}</td>
+        <td>{{stockprice.DIVIDENDS}}</td>
+        <td>{{stockprice.STOCKSPLITS}}</td>
+        <td>{{stockprice.CREATED_AT}}</td>
       </tr>
       {% endfor %}
     </tbody>

@@ -8,8 +8,8 @@ from pydantic import BaseModel, EmailStr, Field
 class Stocktwits(Document):
     SYMBOL: str = None
     CONTENT: str = None
-    # VOLUME: int = None
-    # roles :List[str] = ['MEMBER',]
+    DATETIME: str = None
+    LINKS : List[str] = ['MEMBER',]
     CREATED_AT: datetime = Field(default_factory=datetime.now)
     # last_access_date: datetime = Field(default_factory=datetime.now)
 

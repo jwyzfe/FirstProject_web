@@ -24,24 +24,24 @@ async def list(request:Request, page_number: Optional[int] = 1):
     # { 'name': { '$regex': user_dict.word } }
     conditions = { }
 
-    try :
-        conditions = {user_dict['key_name'] : { '$regex': user_dict["word"] }}
-    except:
-        pass
+    # try :
+    #     conditions = {user_dict['key_name'] : { '$regex': user_dict["word"] }}
+    # except:
+    #     pass
 
-    user_list, pagination = await collection_stockprice.getsbyconditionswithpagination(conditions
+    stockprice_list, pagination = await collection_stockprice.getsbyconditionswithpagination(conditions
                                                                      ,page_number)
     return templates.TemplateResponse(name="stockprice/list.html"
                                       , context={'request':request
-                                                 , 'users' : user_list
+                                                 , 'stockprices' : stockprice_list
                                                   ,'pagination' : pagination })
 from beanie import PydanticObjectId
 # 회원 상세정보 /users/read -> users/read.html
 # Path parameters : /users/read/id or /users/read/uniqe_name
 @router.get("/read/{object_id}")
 async def read(request:Request, object_id:PydanticObjectId):
-    user = await collection_stockprice.get(object_id)
-    return templates.TemplateResponse(name="users/read.html"
+    stockprice = await collection_stockprice.get(object_id)
+    return templates.TemplateResponse(name="stockprice/read.html"
                                       , context={'request':request
-                                                 , 'user':user})
+                                                 , 'stockprice':stockprice})
 
