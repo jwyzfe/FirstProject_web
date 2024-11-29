@@ -9,19 +9,34 @@
         <div class="col-12 row">
             <div class="col-4 row">
                 <label class="form-label col-12">
-                    Name : {{ user.name}}
+                    SYMBOL : {{stockprice.SYMBOL}}
                 </label>
                 <label class="form-label col-12">
-                    Email : {{ user.email}}
+                    DATE : {{stockprice.DATE}}
                 </label>
                 <label class="form-label col-12">
-                    Authority : {{ user.roles}}
+                    OPEN : {{ '%.3f' | format(stockprice.OPEN) }}
                 </label>
                 <label class="form-label col-12">
-                    create_date : {{user.create_date.strftime('%Y.%m.%d %H:%M')}}
+                    HIGH : {{ '%.3f' | format(stockprice.HIGH) }}
                 </label>
                 <label class="form-label col-12">
-                    last_access_date : {{user.last_access_date.strftime('%Y.%m.%d %H:%M')}}
+                    LOW : {{ '%.3f' | format(stockprice.LOW) }}
+                </label>
+                <label class="form-label col-12">
+                    CLOSE : {{ '%.3f' | format(stockprice.CLOSE) }}
+                </label>
+                <label class="form-label col-12">
+                    VOLUME : {{stockprice.VOLUME}}
+                </label>
+                <label class="form-label col-12">
+                    DIVIDENDS : {{stockprice.DIVIDENDS}}
+                </label>
+                <label class="form-label col-12">
+                    STOCKSPLITS : {{stockprice.STOCKSPLITS}}
+                </label>
+                <label class="form-label col-12">
+                    CREATED_AT : {{stockprice.CREATED_AT}}
                 </label>
             </div>
             <div class="col-6 row">
@@ -29,7 +44,7 @@
         </div>
         <div class="col-12 d-flex justify-content-end">
             <div class="form-group">
-                <button type="submit" class="btn btn-primary" formaction="/users/list" formmethod="get">List</button>
+                <button type="submit" class="btn btn-primary" formaction="/stockprice/list" formmethod="get">List</button>
             </div>
         </div>
     </div>

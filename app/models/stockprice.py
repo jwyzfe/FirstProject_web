@@ -20,7 +20,8 @@ class Stockprice(Document):
     # last_access_date: datetime = Field(default_factory=datetime.now)
 
     class Settings:
-        name = "COL_STOCKPRICE_DAILY"
+        # name = "COL_STOCKPRICE_DAILY"
+        name = "COL_STOCKPRICE_HISTORY" # 속도 어떻하지? 
 
     # class Config:
     #     json_schema_extra = {
