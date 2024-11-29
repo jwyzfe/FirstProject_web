@@ -17,7 +17,7 @@ Member List
       <input class="form-control" placeholder="Enter Search!" name="word" value="{{request._query_params.word}}">
     </div>
     <div class="col-4">
-      <button type="submit" class="btn btn-primary" formaction="/users/list" formmethod="get">
+      <button type="submit" class="btn btn-primary" formaction="/???/list" formmethod="get">
         Search <span class="badge bg-success" id="">{{pagination.total_records}}</span>
       </button>
     </div>
@@ -25,7 +25,7 @@ Member List
   <table class="table table-hover">
     <thead>
       <tr>
-        <th>No.</th>
+        <th>No.</th> 여기부분부터 달라지네
         <th>Name</th>
         <th>Email</th>
         <th>Authority</th>
@@ -34,16 +34,16 @@ Member List
       </tr>
     </thead>
     <tbody>
-      {% for user in users %}
+      {% for ???? in ???? %}
       <tr>
         <td>{{pagination.start_record_number + loop.index}}</td>
         <td>
-          <a href="/users/read/{{user.id}}" class="text-decoration-none">{{user.name}}</a>
+          <a href="/???/read/{{user.id}}" class="text-decoration-none">{{???.name}}</a>
         </td>
-        <td>{{user.email}}</td>
+        <td>{{???.????}}</td>
         <td>{{user.roles}}</td>
         <td>{{user.last_access_date.strftime('%Y.%m.%d %H:%M')}}</td>
-        <td>{{user.create_date.strftime('%Y.%m.%d %H:%M')}}</td>
+        <td>{{tosscoments.???('%Y.%m.%d %H:%M')}}</td>
       </tr>
       {% endfor %}
     </tbody>

@@ -1,3 +1,5 @@
+#html에서 총 페이지랑 > 그리고 순서
+
 from math import ceil
 
 class Paginations:
