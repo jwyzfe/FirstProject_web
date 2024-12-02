@@ -1,27 +1,25 @@
 from typing import Optional, List
 from beanie import Document
 from datetime import datetime
+from pydantic import BaseModel, Field
 
-from pydantic import BaseModel, EmailStr, Field
-
-
-class Stockprice(Document):
-    SYMBOL: str = None
+class TimeData(BaseModel):
+    DATE: datetime = Field(default_factory=datetime.now)
     OPEN: float = None
     HIGH: float = None
     LOW: float = None
     CLOSE: float = None
-    DIVIDENDS: float = None
-    STOCKSPLITS: float = None
     VOLUME: int = None
-    # roles :List[str] = ['MEMBER',]
-    DATE: datetime = Field(default_factory=datetime.now)
+    STOCKSPLITS: float = Field(default=0)
+    DIVIDENDS: float = Field(default=0)
+
+class Stockprice(Document):
+    SYMBOL: str = None
+    time_data: TimeData
     CREATED_AT: datetime = Field(default_factory=datetime.now)
-    # last_access_date: datetime = Field(default_factory=datetime.now)
 
     class Settings:
-        # name = "COL_STOCKPRICE_DAILY"
-        name = "COL_STOCKPRICE_HISTORY" # 속도 어떻하지? 
+        name = "COL_STOCKPRICE_EMBEDDED"
 
     # class Config:
     #     json_schema_extra = {

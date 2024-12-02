@@ -157,6 +157,107 @@ class Database:
         if documents:
             return documents, pagination
         return [], pagination     
+    
+    async def get_symbol_summary_with_pagination(self
+                                            , conditions: dict = {}
+                                            , page_number=1
+                                            , records_per_page=10
+                                            , pages_per_block=5) -> [Any]:
+        try:
+            # 심볼별 요약 정보를 가져오는 파이프라인 (단순화)
+            pipeline = [
+                {"$match": conditions},
+                {"$group": {
+                    "_id": "$SYMBOL",
+                    "created_at": {"$first": "$CREATED_AT"}
+                }},
+                {"$sort": {"_id": 1}},
+                {"$skip": (page_number - 1) * records_per_page},
+                {"$limit": records_per_page},
+                {"$project": {
+                    "_id": 1,
+                    "SYMBOL": "$_id",
+                    "CREATED_AT": "$created_at"
+                }}
+            ]
+            
+            # 전체 심볼 수 계산을 위한 파이프라인
+            count_pipeline = [
+                {"$match": conditions},
+                {"$group": {
+                    "_id": "$SYMBOL"
+                }},
+                {"$count": "total"}
+            ]
+            
+            # 병렬 실행
+            data_future = self.model.aggregate(pipeline).to_list()
+            total_future = self.model.aggregate(count_pipeline).to_list()
+            
+            data = await data_future
+            total_result = await total_future
+            
+            total = total_result[0]["total"] if total_result else 0
+            
+            pagination = Paginations(total_records=total
+                                , current_page=page_number
+                                , records_per_page=records_per_page
+                                , pages_per_block=pages_per_block)
+            
+            # 컬럼명 추출 (이제 3개의 필드만 있음)
+            column_names = ['_id', 'SYMBOL', 'CREATED_AT']
+            
+            return data, pagination, column_names
+            
+        except Exception as e:
+            print(f"Error in get_symbol_summary_with_pagination: {e}")
+            return [], Paginations(total_records=0
+                                , current_page=page_number
+                                , records_per_page=records_per_page
+                                , pages_per_block=pages_per_block), []
+
+    async def get_symbol_prices(self, symbol: str, start_date=None, end_date=None) -> [Any]:
+        try:
+            # 기본 조건
+            conditions = {"SYMBOL": symbol}
+            
+            # 날짜 조건 추가
+            if start_date or end_date:
+                date_condition = {}
+                if start_date:
+                    date_condition["$gte"] = start_date
+                if end_date:
+                    date_condition["$lte"] = end_date
+                if date_condition:
+                    conditions["time_data.DATE"] = date_condition
+
+            # 데이터 조회 및 변환
+            documents = await self.model.find(conditions).sort("+time_data.DATE").to_list()
+            
+            # 임베디드 구조를 평탄화하여 반환
+            transformed_docs = []
+            for doc in documents:
+                transformed_doc = {
+                    "_id": doc.id,
+                    "SYMBOL": doc.SYMBOL,
+                    "DATE": doc.time_data.DATE,
+                    "OPEN": doc.time_data.OPEN,
+                    "HIGH": doc.time_data.HIGH,
+                    "LOW": doc.time_data.LOW,
+                    "CLOSE": doc.time_data.CLOSE,
+                    "VOLUME": doc.time_data.VOLUME,
+                    "STOCKSPLITS": doc.time_data.STOCKSPLITS,
+                    "DIVIDENDS": doc.time_data.DIVIDENDS,
+                    "CREATED_AT": doc.CREATED_AT
+                }
+                transformed_docs.append(transformed_doc)
+                
+            return transformed_docs
+            
+        except Exception as e:
+            print(f"Error in get_symbol_prices: {e}")
+            return []
+
 
 
 if __name__ == '__main__':
