@@ -3,8 +3,7 @@ from beanie import Document
 from datetime import datetime
 from pydantic import BaseModel, Field
 
-class TimeData(BaseModel):
-    DATE: datetime = Field(default_factory=datetime.now)
+class PriceData(BaseModel):
     OPEN: float = None
     HIGH: float = None
     LOW: float = None
@@ -12,6 +11,10 @@ class TimeData(BaseModel):
     VOLUME: int = None
     STOCKSPLITS: float = Field(default=0)
     DIVIDENDS: float = Field(default=0)
+
+class TimeData(BaseModel):
+    DATE: datetime = Field(default_factory=datetime.now)
+    price_data: PriceData
 
 class Stockprice(Document):
     SYMBOL: str = None

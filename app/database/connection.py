@@ -204,10 +204,7 @@ class Database:
                                 , records_per_page=records_per_page
                                 , pages_per_block=pages_per_block)
             
-            # 컬럼명 추출 (이제 3개의 필드만 있음)
-            column_names = ['_id', 'SYMBOL', 'CREATED_AT']
-            
-            return data, pagination, column_names
+            return data, pagination
             
         except Exception as e:
             print(f"Error in get_symbol_summary_with_pagination: {e}")
@@ -241,13 +238,13 @@ class Database:
                     "_id": doc.id,
                     "SYMBOL": doc.SYMBOL,
                     "DATE": doc.time_data.DATE,
-                    "OPEN": doc.time_data.OPEN,
-                    "HIGH": doc.time_data.HIGH,
-                    "LOW": doc.time_data.LOW,
-                    "CLOSE": doc.time_data.CLOSE,
-                    "VOLUME": doc.time_data.VOLUME,
-                    "STOCKSPLITS": doc.time_data.STOCKSPLITS,
-                    "DIVIDENDS": doc.time_data.DIVIDENDS,
+                    "OPEN": doc.time_data.price_data.OPEN,
+                    "HIGH": doc.time_data.price_data.HIGH,
+                    "LOW": doc.time_data.price_data.LOW,
+                    "CLOSE": doc.time_data.price_data.CLOSE,
+                    "VOLUME": doc.time_data.price_data.VOLUME,
+                    "STOCKSPLITS": doc.time_data.price_data.STOCKSPLITS,
+                    "DIVIDENDS": doc.time_data.price_data.DIVIDENDS,
                     "CREATED_AT": doc.CREATED_AT
                 }
                 transformed_docs.append(transformed_doc)

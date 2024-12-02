@@ -29,19 +29,31 @@ async def list(request:Request, page_number: Optional[int] = 1):
     # except:
     #     pass
 
-    stockprice_list, pagination = await collection_stockprice.getsbyconditionswithpagination(conditions
-                                                                     ,page_number)
+    # stockprice_list, pagination = await collection_stockprice.getsbyconditionswithpagination(conditions
+    #                                                                  ,page_number)
+    # 심볼 요약 정보 조회 (페이지네이션)
+    summaries, pagination = await collection_stockprice.get_symbol_summary_with_pagination(page_number=page_number)
+
+
+
     return templates.TemplateResponse(name="stockprice/list.html"
                                       , context={'request':request
-                                                 , 'stockprices' : stockprice_list
+                                                 , 'stockprices' : summaries
                                                   ,'pagination' : pagination })
 from beanie import PydanticObjectId
 # 회원 상세정보 /users/read -> users/read.html
 # Path parameters : /users/read/id or /users/read/uniqe_name
+# @router.get("/read/{object_id}")
+# async def read(request:Request, object_id:PydanticObjectId):
+#     stockprice = await collection_stockprice.get(object_id)
+#     return templates.TemplateResponse(name="stockprice/read.html"
+#                                       , context={'request':request
+#                                                  , 'stockprice':stockprice})
+
 @router.get("/read/{object_id}")
-async def read(request:Request, object_id:PydanticObjectId):
-    stockprice = await collection_stockprice.get(object_id)
+async def read(request:Request, object_id:str):
+        # 특정 심볼의 전체 주가 데이터 조회
+    prices = await collection_stockprice.get_symbol_prices(object_id)
     return templates.TemplateResponse(name="stockprice/read.html"
                                       , context={'request':request
-                                                 , 'stockprice':stockprice})
-
+                                                 , 'stockprice':prices})
