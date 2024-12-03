@@ -14,11 +14,11 @@ class PriceData(BaseModel):
 
 class TimeData(BaseModel):
     DATE: datetime = Field(default_factory=datetime.now)
-    price_data: PriceData
+    PRICE_DATA: PriceData
 
 class Stockprice(Document):
     SYMBOL: str = None
-    time_data: TimeData
+    TIME_DATA: TimeData
     CREATED_AT: datetime = Field(default_factory=datetime.now)
 
     class Settings:

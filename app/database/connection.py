@@ -226,10 +226,10 @@ class Database:
                 if end_date:
                     date_condition["$lte"] = end_date
                 if date_condition:
-                    conditions["time_data.DATE"] = date_condition
+                    conditions["TIME_DATA.DATE"] = date_condition
 
             # 데이터 조회 및 변환
-            documents = await self.model.find(conditions).sort("+time_data.DATE").to_list()
+            documents = await self.model.find(conditions).sort("+TIME_DATA.DATE").to_list()
             
             # 임베디드 구조를 평탄화하여 반환
             transformed_docs = []
@@ -237,14 +237,14 @@ class Database:
                 transformed_doc = {
                     "_id": doc.id,
                     "SYMBOL": doc.SYMBOL,
-                    "DATE": doc.time_data.DATE,
-                    "OPEN": doc.time_data.price_data.OPEN,
-                    "HIGH": doc.time_data.price_data.HIGH,
-                    "LOW": doc.time_data.price_data.LOW,
-                    "CLOSE": doc.time_data.price_data.CLOSE,
-                    "VOLUME": doc.time_data.price_data.VOLUME,
-                    "STOCKSPLITS": doc.time_data.price_data.STOCKSPLITS,
-                    "DIVIDENDS": doc.time_data.price_data.DIVIDENDS,
+                    "DATE": doc.TIME_DATA.DATE,
+                    "OPEN": doc.TIME_DATA.PRICE_DATA.OPEN,
+                    "HIGH": doc.TIME_DATA.PRICE_DATA.HIGH,
+                    "LOW": doc.TIME_DATA.PRICE_DATA.LOW,
+                    "CLOSE": doc.TIME_DATA.PRICE_DATA.CLOSE,
+                    "VOLUME": doc.TIME_DATA.PRICE_DATA.VOLUME,
+                    "STOCKSPLITS": doc.TIME_DATA.PRICE_DATA.STOCKSPLITS,
+                    "DIVIDENDS": doc.TIME_DATA.PRICE_DATA.DIVIDENDS,
                     "CREATED_AT": doc.CREATED_AT
                 }
                 transformed_docs.append(transformed_doc)
