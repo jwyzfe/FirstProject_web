@@ -7,7 +7,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi import Request
 
 templates = Jinja2Templates(directory="app/templates/")
-
+from datetime import datetime
 from app.database.connection import Database
 from app.models.stockprice import Stockprice
 collection_stockprice = Database(Stockprice)
@@ -21,14 +21,13 @@ from typing import Optional
 async def list(request:Request, page_number: Optional[int] = 1):
     query_params = dict(request._query_params)
     conditions = {}
-
     # 검색 조건 구성
     if 'search_type' in query_params and 'search_word' in query_params and query_params['search_word']:
         search_word = query_params['search_word']
         
         if query_params['search_type'] == 'symbol':
             # Symbol은 정확히 일치
-            conditions['SYMBOL'] = search_word
+            conditions['SYMBOL'] = search_word.upper()
         elif query_params['search_type'] == 'content':
             # Content는 부분 일치
             conditions['CONTENT'] = {'$regex': search_word, '$options': 'i'}
@@ -36,21 +35,13 @@ async def list(request:Request, page_number: Optional[int] = 1):
             # Links는 부분 일치
             conditions['LINKS'] = {'$regex': search_word, '$options': 'i'}
 
-    # 날짜 검색 조건 추가
-    date_condition = {}
-    if 'start_date' in query_params and query_params['start_date']:
-        date_condition['$gte'] = query_params['start_date']
-    if 'end_date' in query_params and query_params['end_date']:
-        date_condition['$lte'] = query_params['end_date']
-    
-    if date_condition:
-        conditions['TIME_DATA.DATE'] = date_condition
-
     # 심볼 요약 정보 조회 (페이지네이션)
-    #summaries, pagination = await collection_stockprice.get_symbol_summary_with_pagination(page_number=page_number)
+    summaries, pagination = await collection_stockprice.get_symbol_summary_with_pagination(
+        conditions=conditions,
+        page_number=page_number)
 
-    summaries, pagination = await collection_stockprice.getsbyconditionswithpagination(
-        conditions, page_number)
+    # summaries, pagination = await collection_stockprice.getsbyconditionswithpagination(
+    #     conditions, page_number)
 
 
     return templates.TemplateResponse(name="stockprice/list.html"
@@ -76,25 +67,60 @@ async def read(request:Request, object_id:str, page_number: Optional[int] = 1):
     # 날짜 검색 조건 추가
     date_condition = {}
     if 'start_date' in query_params and query_params['start_date']:
-        date_condition['$gte'] = query_params['start_date']
+        start_datetime = datetime.strptime(query_params['start_date'], '%Y-%m-%d').replace(hour=0, minute=0, second=0)
+        date_condition['$gte'] = start_datetime
     if 'end_date' in query_params and query_params['end_date']:
-        date_condition['$lte'] = query_params['end_date']
-    
+        end_datetime = datetime.strptime(query_params['end_date'], '%Y-%m-%d').replace(hour=23, minute=59, second=59)
+        date_condition['$lte'] = end_datetime
     if date_condition:
-        # 임베디드 구조의 TIME_DATA.DATE 필드에 대한 조건 설정
         conditions['TIME_DATA.DATE'] = date_condition
+
+    # 가격 검색 조건 추가
+    if all(key in query_params for key in ['price_field', 'comparison', 'price_value']) and query_params['price_value']:
+        price_field = query_params['price_field']
+        comparison = query_params['comparison']
+        try:
+            price_value = float(query_params['price_value'])
             
-    prices, pagination = await collection_stockprice.get_symbol_prices(
-        symbol=object_id, 
+            # MongoDB 쿼리 연산자 매핑
+            operator = '$gte' if comparison == 'gte' else '$lte'
+            
+            # 임베디드 구조에 맞게 필드 이름 구성
+            field_name = f'TIME_DATA.PRICE_DATA.{price_field}'
+            conditions[field_name] = {operator: price_value}
+        except ValueError:
+            pass  # 숫자 변환 실패 시 무시
+
+    print("Search conditions:", conditions)  # 디버깅용 출력
+            
+    prices, pagination = await collection_stockprice.getsbyconditionswithpagination(
+        conditions=conditions,
         page_number=page_number,
-        start_date=query_params.get('start_date'),
-        end_date=query_params.get('end_date')
+        sort_field='TIME_DATA.DATE'
     )
+    
+    # 결과 변환 (임베디드 구조를 평탄화)
+    transformed_prices = []
+    for doc in prices:
+        transformed_doc = {
+            "_id": doc.id,
+            "SYMBOL": doc.SYMBOL,
+            "DATE": doc.TIME_DATA.DATE,
+            "OPEN": doc.TIME_DATA.PRICE_DATA.OPEN,
+            "HIGH": doc.TIME_DATA.PRICE_DATA.HIGH,
+            "LOW": doc.TIME_DATA.PRICE_DATA.LOW,
+            "CLOSE": doc.TIME_DATA.PRICE_DATA.CLOSE,
+            "VOLUME": doc.TIME_DATA.PRICE_DATA.VOLUME,
+            "STOCKSPLITS": doc.TIME_DATA.PRICE_DATA.STOCKSPLITS,
+            "DIVIDENDS": doc.TIME_DATA.PRICE_DATA.DIVIDENDS,
+            "CREATED_AT": doc.CREATED_AT
+        }
+        transformed_prices.append(transformed_doc)
     
     return templates.TemplateResponse(
         name="stockprice/list_detail.html",
         context={
             'request': request,
-            'stockprices': prices,
+            'stockprices': transformed_prices,
             'pagination': pagination
         })

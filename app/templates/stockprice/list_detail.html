@@ -9,12 +9,21 @@ Member List
   <!-- 검색 항목 추가 필요 -->
   <div class="row mb-3">
     <div class="col-2">
-      <select class="form-select" name="search_type">
-        <option value="symbol" {{ 'selected' if request._query_params.search_type=='symbol' else '' }}>Symbol</option>
+      <select class="form-select" name="price_field">
+        <option value="OPEN" {{ 'selected' if request._query_params.price_field=='OPEN' else '' }}>Open</option>
+        <option value="HIGH" {{ 'selected' if request._query_params.price_field=='HIGH' else '' }}>High</option>
+        <option value="LOW" {{ 'selected' if request._query_params.price_field=='LOW' else '' }}>Low</option>
+        <option value="CLOSE" {{ 'selected' if request._query_params.price_field=='CLOSE' else '' }}>Close</option>
       </select>
     </div>
-    <div class="col-4">
-      <input class="form-control" placeholder="검색어 입력" name="search_word" value="{{request._query_params.search_word}}">
+    <div class="col-2">
+      <select class="form-select" name="comparison">
+        <option value="gte" {{ 'selected' if request._query_params.comparison=='gte' else '' }}>gte</option>
+        <option value="lte" {{ 'selected' if request._query_params.comparison=='lte' else '' }}>lte</option>
+      </select>
+    </div>
+    <div class="col-2">
+      <input type="number" step="0.001" class="form-control" name="price_value" value="{{request._query_params.price_value}}" placeholder="가격 입력">
     </div>
     <div class="col-2">
       <input type="date" class="form-control" name="start_date" value="{{request._query_params.start_date}}">
@@ -24,7 +33,7 @@ Member List
     </div>
     <div class="col-2">
       <button type="submit" class="btn btn-primary" formaction="/stockprice/read/{{object_id}}" formmethod="get">
-        검색 <span class="badge bg-success">{{pagination.total_records}}</span>
+        Search <span class="badge bg-success">{{pagination.total_records}}</span>
       </button>
     </div>
   </div>

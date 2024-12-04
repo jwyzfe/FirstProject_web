@@ -30,7 +30,7 @@ async def list(request: Request, page_number: Optional[int] = 1):
         
         if query_params['search_type'] == 'symbol':
             # Symbol은 정확히 일치
-            conditions['SYMBOL'] = search_word
+            conditions['SYMBOL'] = search_word.upper()
         elif query_params['search_type'] == 'content':
             # Content는 부분 일치
             conditions['CONTENT'] = {'$regex': search_word, '$options': 'i'}

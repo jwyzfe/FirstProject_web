@@ -165,126 +165,40 @@ class Database:
                                             , records_per_page=10
                                             , pages_per_block=5) -> [Any]:
         try:
-            # 심볼별 요약 정보를 가져오는 파이프라인 (단순화)
-            pipeline = [
-                {"$match": conditions},
-                {"$group": {
-                    "_id": "$SYMBOL",
-                    "created_at": {"$first": "$CREATED_AT"}
-                }},
-                {"$sort": {"_id": 1}},
-                {"$skip": (page_number - 1) * records_per_page},
-                {"$limit": records_per_page},
-                {"$project": {
-                    "_id": 1,
-                    "SYMBOL": "$_id",
-                    "CREATED_AT": "$created_at"
-                }}
-            ]
-            
-            # 전체 심볼 수 계산을 위한 파이프라인
-            count_pipeline = [
-                {"$match": conditions},
-                {"$group": {
-                    "_id": "$SYMBOL"
-                }},
-                {"$count": "total"}
-            ]
-            
-            # 병렬 실행
-            data_future = self.model.aggregate(pipeline).to_list()
-            total_future = self.model.aggregate(count_pipeline).to_list()
-            
-            data = await data_future
-            total_result = await total_future
-            
-            total = total_result[0]["total"] if total_result else 0
-            
-            pagination = Paginations(total_records=total
-                                , current_page=page_number
-                                , records_per_page=records_per_page
-                                , pages_per_block=pages_per_block)
-            
-            return data, pagination
-            
-        except Exception as e:
-            print(f"Error in get_symbol_summary_with_pagination: {e}")
-            return [], Paginations(total_records=0
-                                , current_page=page_number
-                                , records_per_page=records_per_page
-                                , pages_per_block=pages_per_block)
-
-
-    async def get_symbol_prices(self
-                                , symbol: str
-                                , page_number=1
-                                , records_per_page=10
-                                , pages_per_block=5
-                                , start_date=None
-                                , end_date=None) -> [Any]:
-        try:
-            # 기본 조건
-            conditions = {"SYMBOL": symbol}
-            conditions = {}
-            
-            # 날짜 조건 추가
-            if start_date or end_date:
-                date_condition = {}
-                if start_date:
-                    # 문자열을 datetime으로 변환 (시작일은 00:00:00)
-                    start_datetime = datetime.strptime(start_date, '%Y-%m-%d').replace(hour=0, minute=0, second=0)
-                    date_condition["$gte"] = start_datetime
-                if end_date:
-                    # 문자열을 datetime으로 변환 (종료일은 23:59:59)
-                    end_datetime = datetime.strptime(end_date, '%Y-%m-%d').replace(hour=23, minute=59, second=59)
-                    date_condition["$lte"] = end_datetime
-                if date_condition:
-                    conditions["TIME_DATA.DATE"] = date_condition
-
-            print("Search conditions:", conditions)  # 디버깅용 출력
-            
-            # 전체 문서 수 조회
-            total = await self.model.find(conditions).count()
+            # distinct를 사용하여 unique한 SYMBOL 값들의 총 개수를 가져옴
+            total = len(await self.model.distinct('SYMBOL', conditions))
             
             # 페이지네이션 객체 생성
-            pagination = Paginations(total_records=total
-                                , current_page=page_number
-                                , records_per_page=records_per_page
-                                , pages_per_block=pages_per_block)
+            pagination = Paginations(
+                total_records=total,
+                current_page=page_number,
+                records_per_page=records_per_page,
+                pages_per_block=pages_per_block
+            )
 
-            # 페이지에 해당하는 데이터만 조회
-            documents = await self.model.find(conditions) \
-                            .sort("+TIME_DATA.DATE") \
-                            .skip(pagination.start_record_number) \
-                            .limit(pagination.records_per_page) \
-                            .to_list()
+            # distinct SYMBOL 값들을 정렬하여 페이지네이션 적용
+            symbols = await self.model.distinct('SYMBOL', conditions)
+            symbols.sort()  # 알파벳 순 정렬
             
-            # 임베디드 구조를 평탄화하여 반환
-            transformed_docs = []
-            for doc in documents:
-                transformed_doc = {
-                    "_id": doc.id,
-                    "SYMBOL": doc.SYMBOL,
-                    "DATE": doc.TIME_DATA.DATE,
-                    "OPEN": doc.TIME_DATA.PRICE_DATA.OPEN,
-                    "HIGH": doc.TIME_DATA.PRICE_DATA.HIGH,
-                    "LOW": doc.TIME_DATA.PRICE_DATA.LOW,
-                    "CLOSE": doc.TIME_DATA.PRICE_DATA.CLOSE,
-                    "VOLUME": doc.TIME_DATA.PRICE_DATA.VOLUME,
-                    "STOCKSPLITS": doc.TIME_DATA.PRICE_DATA.STOCKSPLITS,
-                    "DIVIDENDS": doc.TIME_DATA.PRICE_DATA.DIVIDENDS,
-                    "CREATED_AT": doc.CREATED_AT
-                }
-                transformed_docs.append(transformed_doc)
-                
-            return transformed_docs, pagination
+            # 페이지네이션 적용
+            start_idx = pagination.start_record_number
+            end_idx = start_idx + pagination.records_per_page
+            paged_symbols = symbols[start_idx:end_idx]
+
+            # 심볼 목록을 원하는 형식으로 변환
+            result = [{"SYMBOL": symbol} for symbol in paged_symbols]
             
+            return result, pagination
+
         except Exception as e:
-            print(f"Error in get_symbol_prices: {e}")
-            return [], Paginations(total_records=0
-                                , current_page=page_number
-                                , records_per_page=records_per_page
-                                , pages_per_block=pages_per_block)
+            print(f"Error in get_symbol_summary_with_pagination: {e}")
+            return [], Paginations(
+                total_records=0,
+                current_page=page_number,
+                records_per_page=records_per_page,
+                pages_per_block=pages_per_block
+            )
+
 
 
 
