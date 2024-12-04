@@ -50,10 +50,13 @@ from beanie import PydanticObjectId
 #                                       , context={'request':request
 #                                                  , 'stockprice':stockprice})
 
+@router.get("/read/{object_id}/{page_number}")
 @router.get("/read/{object_id}")
-async def read(request:Request, object_id:str):
+async def read(request:Request, object_id:str, page_number: Optional[int] = 1):
         # 특정 심볼의 전체 주가 데이터 조회
-    prices = await collection_stockprice.get_symbol_prices(object_id)
-    return templates.TemplateResponse(name="stockprice/read.html"
+    prices, pagination = await collection_stockprice.get_symbol_prices(object_id, page_number)
+    return templates.TemplateResponse(name="stockprice/list_detail.html"
                                       , context={'request':request
-                                                 , 'stockprice':prices})
+                                                 , 'stockprices':prices
+                                                 ,'pagination' : pagination
+                                                 })

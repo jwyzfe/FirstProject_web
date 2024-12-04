@@ -211,9 +211,16 @@ class Database:
             return [], Paginations(total_records=0
                                 , current_page=page_number
                                 , records_per_page=records_per_page
-                                , pages_per_block=pages_per_block), []
+                                , pages_per_block=pages_per_block)
 
-    async def get_symbol_prices(self, symbol: str, start_date=None, end_date=None) -> [Any]:
+
+    async def get_symbol_prices(self
+                                , symbol: str
+                                , page_number=1
+                                , records_per_page=10
+                                , pages_per_block=5
+                                , start_date=None
+                                , end_date=None) -> [Any]:
         try:
             # 기본 조건
             conditions = {"SYMBOL": symbol}
@@ -228,8 +235,21 @@ class Database:
                 if date_condition:
                     conditions["TIME_DATA.DATE"] = date_condition
 
-            # 데이터 조회 및 변환
-            documents = await self.model.find(conditions).sort("+TIME_DATA.DATE").to_list()
+            # 전체 문서 수 조회
+            total = await self.model.find(conditions).count()
+            
+            # 페이지네이션 객체 생성
+            pagination = Paginations(total_records=total
+                                , current_page=page_number
+                                , records_per_page=records_per_page
+                                , pages_per_block=pages_per_block)
+
+            # 페이지에 해당하는 데이터만 조회
+            documents = await self.model.find(conditions) \
+                            .sort("+TIME_DATA.DATE") \
+                            .skip(pagination.start_record_number) \
+                            .limit(pagination.records_per_page) \
+                            .to_list()
             
             # 임베디드 구조를 평탄화하여 반환
             transformed_docs = []
@@ -249,11 +269,14 @@ class Database:
                 }
                 transformed_docs.append(transformed_doc)
                 
-            return transformed_docs
+            return transformed_docs, pagination
             
         except Exception as e:
             print(f"Error in get_symbol_prices: {e}")
-            return []
+            return [], Paginations(total_records=0
+                                , current_page=page_number
+                                , records_per_page=records_per_page
+                                , pages_per_block=pages_per_block)
 
 
 
