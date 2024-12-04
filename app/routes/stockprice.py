@@ -36,23 +36,16 @@ async def list(request:Request, page_number: Optional[int] = 1):
             # Links는 부분 일치
             conditions['LINKS'] = {'$regex': search_word, '$options': 'i'}
 
-    # 날짜 검색 조건 추가
-    date_condition = {}
-    if 'start_date' in query_params and query_params['start_date']:
-        date_condition['$gte'] = query_params['start_date']
-    if 'end_date' in query_params and query_params['end_date']:
-        date_condition['$lte'] = query_params['end_date']
-    
-    if date_condition:
-        conditions['TIME_DATA.DATE'] = date_condition
-
     # 심볼 요약 정보 조회 (페이지네이션)
     #summaries, pagination = await collection_stockprice.get_symbol_summary_with_pagination(page_number=page_number)
 
-    summaries, pagination = await collection_stockprice.getsbyconditionswithpagination(
-        conditions, page_number)
-
-
+    summaries, pagination = await collection_stockprice.get_symbol_prices(
+        conditions=conditions, 
+        page_number=page_number,
+        start_date=query_params.get('start_date'),
+        end_date=query_params.get('end_date')
+    )
+    
     return templates.TemplateResponse(name="stockprice/list.html"
                                       , context={'request':request
                                                  , 'stockprices' : summaries

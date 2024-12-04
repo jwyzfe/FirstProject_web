@@ -216,16 +216,13 @@ class Database:
 
 
     async def get_symbol_prices(self
-                                , symbol: str
+                                , conditions: dict
                                 , page_number=1
                                 , records_per_page=10
                                 , pages_per_block=5
                                 , start_date=None
                                 , end_date=None) -> [Any]:
         try:
-            # 기본 조건
-            conditions = {"SYMBOL": symbol}
-            conditions = {}
             
             # 날짜 조건 추가
             if start_date or end_date:

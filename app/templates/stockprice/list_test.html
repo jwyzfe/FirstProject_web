@@ -4,7 +4,6 @@ Member List
 {% endblock %}
 
 {% block main_container %}
-{% set object_id = request.path_params.get('object_id', '') %}
 <form>
   <!-- 검색 항목 추가 필요 -->
   <div class="row mb-3">
@@ -23,7 +22,7 @@ Member List
       <input type="date" class="form-control" name="end_date" value="{{request._query_params.end_date}}">
     </div>
     <div class="col-2">
-      <button type="submit" class="btn btn-primary" formaction="/stockprice/read/{{object_id}}" formmethod="get">
+      <button type="submit" class="btn btn-primary" formaction="/stockprice/list" formmethod="get">
         검색 <span class="badge bg-success">{{pagination.total_records}}</span>
       </button>
     </div>
@@ -51,14 +50,6 @@ Member List
         <td>
           <a href="/stockprice/read/{{stockprice.SYMBOL}}" class="text-decoration-none">{{stockprice.SYMBOL}}</a>
         </td>
-        <td>{{stockprice.DATE}}</td>
-        <td>{{ '%.3f' | format(stockprice.OPEN) }}</td>
-        <td>{{ '%.3f' | format(stockprice.HIGH) }}</td>
-        <td>{{ '%.3f' | format(stockprice.LOW) }}</td>
-        <td>{{ '%.3f' | format(stockprice.CLOSE) }}</td>
-        <td>{{stockprice.VOLUME}}</td>
-        <td>{{stockprice.DIVIDENDS}}</td>
-        <td>{{stockprice.STOCKSPLITS}}</td>
         <td>{{stockprice.CREATED_AT}}</td>
       </tr>
       {% endfor %}
