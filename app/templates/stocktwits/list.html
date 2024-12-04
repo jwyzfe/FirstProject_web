@@ -6,19 +6,26 @@ Member List
 {% block main_container %}
 <form>
   <!-- 검색 항목 추가 필요 -->
-  <div class="row">
+  <div class="row mb-3">
     <div class="col-2">
-      <select class="form-select" name="key_name">
-        <option value="name" {{ 'selected' if request._query_params.key_name=='name' else '' }}>name</option>
-        <option value="email" {{ 'selected' if request._query_params.key_name=='email' else '' }}>email</option>
+      <select class="form-select" name="search_type">
+        <option value="symbol" {{ 'selected' if request._query_params.search_type=='symbol' else '' }}>Symbol</option>
+        <option value="content" {{ 'selected' if request._query_params.search_type=='content' else '' }}>Content</option>
+        <option value="links" {{ 'selected' if request._query_params.search_type=='links' else '' }}>Links</option>
       </select>
     </div>
-    <div class="col-6">
-      <input class="form-control" placeholder="Enter Search!" name="word" value="{{request._query_params.word}}">
-    </div>
     <div class="col-4">
+      <input class="form-control" placeholder="검색어 입력" name="search_word" value="{{request._query_params.search_word}}">
+    </div>
+    <div class="col-2">
+      <input type="date" class="form-control" name="start_date" value="{{request._query_params.start_date}}">
+    </div>
+    <div class="col-2">
+      <input type="date" class="form-control" name="end_date" value="{{request._query_params.end_date}}">
+    </div>
+    <div class="col-2">
       <button type="submit" class="btn btn-primary" formaction="/stocktwits/list" formmethod="get">
-        Search <span class="badge bg-success" id="">{{pagination.total_records}}</span>
+        검색 <span class="badge bg-success">{{pagination.total_records}}</span>
       </button>
     </div>
   </div>
@@ -30,7 +37,7 @@ Member List
         <th>Content</th>
         <th>Datetime</th>
         <th>Links</th>
-        <th>Create Date</th>
+        <!--<th>Create Date</th>-->
       </tr>
     </thead>
     <tbody>
@@ -41,7 +48,7 @@ Member List
           <a href="/stocktwits/read/{{comment.id}}" class="text-decoration-none">{{comment.SYMBOL}}</a>
         </td>
         <td>{{comment.CONTENT}}</td>
-        <td>{{comment.DATETIME}}</td>
+        <td>{{ comment.DATETIME[:10].replace('-', '.') }} {{ comment.DATETIME[11:16] }}</td>
         <td>
           {% for link in comment.LINKS %}
               <a href="{{ link }}" target="_blank" class="text-decoration-none me-2">{{ link | truncate(30, true, '...') }}</a>
@@ -50,7 +57,7 @@ Member List
               -  {# 링크가 없는 경우 표시 #}
           {% endfor %}
         </td>
-        <td>{{comment.CREATED_AT}}</td>
+        <!--<td>{{comment.CREATED_AT}}</td>-->
       </tr>
       {% endfor %}
     </tbody>
