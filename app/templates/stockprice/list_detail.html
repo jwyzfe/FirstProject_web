@@ -4,21 +4,27 @@ Member List
 {% endblock %}
 
 {% block main_container %}
+{% set object_id = request.path_params.get('object_id', '') %}
 <form>
   <!-- 검색 항목 추가 필요 -->
-  <div class="row">
+  <div class="row mb-3">
     <div class="col-2">
-      <select class="form-select" name="key_name">
-        <option value="name" {{ 'selected' if request._query_params.key_name=='name' else '' }}>name</option>
-        <option value="email" {{ 'selected' if request._query_params.key_name=='email' else '' }}>email</option>
+      <select class="form-select" name="search_type">
+        <option value="symbol" {{ 'selected' if request._query_params.search_type=='symbol' else '' }}>Symbol</option>
       </select>
     </div>
-    <div class="col-6">
-      <input class="form-control" placeholder="Enter Search!" name="word" value="{{request._query_params.word}}">
-    </div>
     <div class="col-4">
-      <button type="submit" class="btn btn-primary" formaction="/stockprice/list" formmethod="get">
-        Search <span class="badge bg-success" id="">{{pagination.total_records}}</span>
+      <input class="form-control" placeholder="검색어 입력" name="search_word" value="{{request._query_params.search_word}}">
+    </div>
+    <div class="col-2">
+      <input type="date" class="form-control" name="start_date" value="{{request._query_params.start_date}}">
+    </div>
+    <div class="col-2">
+      <input type="date" class="form-control" name="end_date" value="{{request._query_params.end_date}}">
+    </div>
+    <div class="col-2">
+      <button type="submit" class="btn btn-primary" formaction="/stockprice/read/{{object_id}}" formmethod="get">
+        검색 <span class="badge bg-success">{{pagination.total_records}}</span>
       </button>
     </div>
   </div>

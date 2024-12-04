@@ -5,6 +5,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings
 
+from datetime import datetime
 
 from app.models.users import User
 from app.models.stockprice import Stockprice
@@ -224,17 +225,24 @@ class Database:
         try:
             # 기본 조건
             conditions = {"SYMBOL": symbol}
+            conditions = {}
             
             # 날짜 조건 추가
             if start_date or end_date:
                 date_condition = {}
                 if start_date:
-                    date_condition["$gte"] = start_date
+                    # 문자열을 datetime으로 변환 (시작일은 00:00:00)
+                    start_datetime = datetime.strptime(start_date, '%Y-%m-%d').replace(hour=0, minute=0, second=0)
+                    date_condition["$gte"] = start_datetime
                 if end_date:
-                    date_condition["$lte"] = end_date
+                    # 문자열을 datetime으로 변환 (종료일은 23:59:59)
+                    end_datetime = datetime.strptime(end_date, '%Y-%m-%d').replace(hour=23, minute=59, second=59)
+                    date_condition["$lte"] = end_datetime
                 if date_condition:
                     conditions["TIME_DATA.DATE"] = date_condition
 
+            print("Search conditions:", conditions)  # 디버깅용 출력
+            
             # 전체 문서 수 조회
             total = await self.model.find(conditions).count()
             
