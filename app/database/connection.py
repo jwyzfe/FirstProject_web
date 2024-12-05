@@ -165,10 +165,11 @@ class Database:
                                             , records_per_page=10
                                             , pages_per_block=5) -> [Any]:
         try:
-            # distinct를 사용하여 unique한 SYMBOL 값들의 총 개수를 가져옴
-            total = len(await self.model.distinct('SYMBOL', conditions))
+            # 먼저 모든 유니크한 심볼 목록을 가져옴
+            all_symbols = await self.model.distinct('SYMBOL', conditions)
+            all_symbols.sort()  # 알파벳 순 정렬
+            total = len(all_symbols)
             
-            # 페이지네이션 객체 생성
             pagination = Paginations(
                 total_records=total,
                 current_page=page_number,
@@ -176,19 +177,23 @@ class Database:
                 pages_per_block=pages_per_block
             )
 
-            # distinct SYMBOL 값들을 정렬하여 페이지네이션 적용
-            symbols = await self.model.distinct('SYMBOL', conditions)
-            symbols.sort()  # 알파벳 순 정렬
+            # 현재 페이지에 해당하는 심볼들만 선택
+            paged_symbols = all_symbols[pagination.start_record_number:pagination.start_record_number + pagination.records_per_page]
             
-            # 페이지네이션 적용
-            start_idx = pagination.start_record_number
-            end_idx = start_idx + pagination.records_per_page
-            paged_symbols = symbols[start_idx:end_idx]
-
-            # 심볼 목록을 원하는 형식으로 변환
-            result = [{"SYMBOL": symbol} for symbol in paged_symbols]
+            # 선택된 심볼들의 최신 데이터 조회
+            formatted_results = []
+            for symbol in paged_symbols:
+                latest_doc = await self.model.find_one(
+                    {"SYMBOL": symbol}, 
+                    sort=[("CREATED_AT", -1)]
+                )
+                if latest_doc:
+                    formatted_results.append({
+                        "SYMBOL": latest_doc.SYMBOL,
+                        "CREATED_AT": latest_doc.CREATED_AT
+                    })
             
-            return result, pagination
+            return formatted_results, pagination
 
         except Exception as e:
             print(f"Error in get_symbol_summary_with_pagination: {e}")

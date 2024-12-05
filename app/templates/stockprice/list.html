@@ -34,6 +34,7 @@ Member List
       <tr>
         <th>No.</th>
         <th>Symbol</th>
+        <th>Create Date</th>
       </tr>
     </thead>
     <tbody>
@@ -43,6 +44,7 @@ Member List
         <td>
           <a href="/stockprice/read/{{stockprice.SYMBOL}}" class="text-decoration-none">{{stockprice.SYMBOL}}</a>
         </td>
+        <td>{{stockprice.CREATED_AT}}</td>
       </tr>
       {% endfor %}
     </tbody>
