@@ -1,17 +1,43 @@
 {% extends "templates/main_template.html"%}
 
 {% block title %}
-Errors
+SGMN
 {% endblock %}
 <!-- main -->
 {% block main_container %}
 <div class="row row-cols-1 row-cols-md-2 align-items-md-center g-2">
-    <div class="col d-flex flex-column align-items-start gap-2">
+    <div class="col d-flex flex-column gap-2">
         <h4 class="fw-bold text-body-emphasis">Source와 DB 포함된 Docker 공유로 개발 환경 통일</h4>
         <p class="text-body-secondary">
             Docker를 통해 소스 코드와 데이터베이스를 한곳에서 관리함으로써 개발 환경을 일관되게 유지할 수 있습니다.
             이는 협업이 용이해지고, 빠른 배포와 테스트 환경 구축에 큰 도움.
         </p>
+        <div class="row ">
+            <form action="/mains/home">
+                <!-- id -->
+                <div class="col-4">ID : </div>
+                <div class="col-8">
+                    <input type="text" name="id" id="" class="form-control" value="{{request._query_params['id']}}">
+                </div>
+                <!-- pw -->
+                <div class="col-4">Password : </div>
+                <div class="col-8">
+                    <input type="text" name="pw" id="" class="form-control">
+                </div>
+                <!-- checked -->
+                <div class="col-4">Checked : </div>
+                <div class="col-8">
+                    <select name="check" id="" class="form-select">
+                        <option value="car_01" {{ 'selected' if request._query_params['check'] == 'car_01' else '' }}>bongo</option>
+                        <option value="car_02" {{ 'selected' if request._query_params['check'] == 'car_02' else '' }}>grander</option>
+                    </select>
+                </div>
+                <!-- button -->
+                <div class="col-4">
+                    <button class="btn btn-primary">Continue</button>
+                </div>
+            </form>
+        </div>
         <!-- YouTube Video Embed with More Rounded Corners 
         <div class="ratio ratio-16x9" style="border-radius: 10px; overflow: hidden;">
             <iframe src="https://www.youtube.com/embed/qTUGWkJEMqw?si=0ooFr2E-QtR88yo6" title="YouTube video"

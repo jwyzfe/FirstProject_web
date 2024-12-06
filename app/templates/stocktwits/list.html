@@ -1,0 +1,69 @@
+{% extends "templates/main_template.html"%}
+{% block title %}
+Member List
+{% endblock %}
+
+{% block main_container %}
+<form>
+  <!-- 검색 항목 추가 필요 -->
+  <div class="row mb-3">
+    <div class="col-2">
+      <select class="form-select" name="search_type">
+        <option value="symbol" {{ 'selected' if request._query_params.search_type=='symbol' else '' }}>Symbol</option>
+        <option value="content" {{ 'selected' if request._query_params.search_type=='content' else '' }}>Content</option>
+        <option value="links" {{ 'selected' if request._query_params.search_type=='links' else '' }}>Links</option>
+      </select>
+    </div>
+    <div class="col-4">
+      <input class="form-control" placeholder="검색어 입력" name="search_word" value="{{request._query_params.search_word}}">
+    </div>
+    <div class="col-2">
+      <input type="date" class="form-control" name="start_date" value="{{request._query_params.start_date}}">
+    </div>
+    <div class="col-2">
+      <input type="date" class="form-control" name="end_date" value="{{request._query_params.end_date}}">
+    </div>
+    <div class="col-2">
+      <button type="submit" class="btn btn-primary" formaction="/stocktwits/list" formmethod="get">
+        검색 <span class="badge bg-success">{{pagination.total_records}}</span>
+      </button>
+    </div>
+  </div>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>No.</th>
+        <th>Symbol</th>
+        <th>Content</th>
+        <th>Datetime</th>
+        <th>Links</th>
+        <!--<th>Create Date</th>-->
+      </tr>
+    </thead>
+    <tbody>
+      {% for comment in comments %}
+      <tr>
+        <td>{{pagination.start_record_number + loop.index}}</td>
+        <td>
+          <a href="/stocktwits/read/{{comment.id}}" class="text-decoration-none">{{comment.SYMBOL}}</a>
+        </td>
+        <td>{{comment.CONTENT}}</td>
+        <td>{{ comment.DATETIME[:10].replace('-', '.') }} {{ comment.DATETIME[11:16] }}</td>
+        <td>
+          {% for link in comment.LINKS %}
+              <a href="{{ link }}" target="_blank" class="text-decoration-none me-2">{{ link | truncate(30, true, '...') }}</a>
+              {% if not loop.last %}<br>{% endif %}
+          {% else %}
+              -  {# 링크가 없는 경우 표시 #}
+          {% endfor %}
+        </td>
+        <!--<td>{{comment.CREATED_AT}}</td>-->
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endblock %}
+  {% block paginations_container %}
+  {% include 'templates/pagination_template.html' %}
+</form>
+{% endblock %}

@@ -4,16 +4,23 @@ from beanie import init_beanie, PydanticObjectId
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings
-from app.models.users import User
 from app.models.tossComments import tossComments
 from app.models.dartAPI import dartAPI
+from app.models.users import User
+from app.models.stockprice import Stockprice
+from app.models.stocktwits import Stocktwits
+
+from datetime import datetime
+
+
+
 import os
 class Settings(BaseSettings):
     DATABASE_URL: Optional[str] = None
 
     async def initialize_database(self):
         client = AsyncIOMotorClient(self.DATABASE_URL)
-        await init_beanie(database=client.get_default_database(), document_models=[User, tossComments, dartAPI])
+        await init_beanie(database=client.get_default_database(), document_models=[User, Stockprice, Stocktwits, tossComments, dartAPI])
 
     class Config:
         env_file = os.path.join("app",".env")
@@ -142,7 +149,7 @@ class Database:
                                              , conditions:dict, page_number=1
                                              , records_per_page=10, pages_per_block=5
                                              , sorted = '-'
-                                             , sort_field:str = 'create_date') -> [Any]:
+                                             , sort_field:str = 'CREATED_AT') -> [Any]:
         try:
             total = await self.model.find(conditions).count()
         except:
@@ -154,6 +161,53 @@ class Database:
         if documents:
             return documents, pagination
         return [], pagination     
+    
+    async def get_symbol_summary_with_pagination(self
+                                            , conditions: dict = {}
+                                            , page_number=1
+                                            , records_per_page=10
+                                            , pages_per_block=5) -> [Any]:
+        try:
+            # 먼저 모든 유니크한 심볼 목록을 가져옴
+            all_symbols = await self.model.distinct('SYMBOL', conditions)
+            all_symbols.sort()  # 알파벳 순 정렬
+            total = len(all_symbols)
+            
+            pagination = Paginations(
+                total_records=total,
+                current_page=page_number,
+                records_per_page=records_per_page,
+                pages_per_block=pages_per_block
+            )
+
+            # 현재 페이지에 해당하는 심볼들만 선택
+            paged_symbols = all_symbols[pagination.start_record_number:pagination.start_record_number + pagination.records_per_page]
+            
+            # 선택된 심볼들의 최신 데이터 조회
+            formatted_results = []
+            for symbol in paged_symbols:
+                latest_doc = await self.model.find_one(
+                    {"SYMBOL": symbol}, 
+                    sort=[("CREATED_AT", -1)]
+                )
+                if latest_doc:
+                    formatted_results.append({
+                        "SYMBOL": latest_doc.SYMBOL,
+                        "CREATED_AT": latest_doc.CREATED_AT
+                    })
+            
+            return formatted_results, pagination
+
+        except Exception as e:
+            print(f"Error in get_symbol_summary_with_pagination: {e}")
+            return [], Paginations(
+                total_records=0,
+                current_page=page_number,
+                records_per_page=records_per_page,
+                pages_per_block=pages_per_block
+            )
+
+
 
 
 if __name__ == '__main__':

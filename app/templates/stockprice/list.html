@@ -1,0 +1,56 @@
+{% extends "templates/main_template.html"%}
+{% block title %}
+Member List
+{% endblock %}
+
+{% block main_container %}
+<form>
+  <!-- 검색 항목 추가 필요 -->
+  <div class="row mb-3">
+    <div class="col-3">
+      <select class="form-select" name="search_type">
+        <option value="symbol" {{ 'selected' if request._query_params.search_type=='symbol' else '' }}>Symbol</option>
+      </select>
+    </div>
+    <div class="col-4">
+      <input class="form-control" placeholder="검색어 입력" name="search_word" value="{{request._query_params.search_word}}">
+    </div>
+    <!--
+    <div class="col-2">
+      <input type="date" class="form-control" name="start_date" value="{{request._query_params.start_date}}">
+    </div>
+    <div class="col-2">
+      <input type="date" class="form-control" name="end_date" value="{{request._query_params.end_date}}">
+    </div>
+    -->
+    <div class="col-3">
+      <button type="submit" class="btn btn-primary" formaction="/stockprice/list" formmethod="get">
+        Search <span class="badge bg-success">{{pagination.total_records}}</span>
+      </button>
+    </div>
+  </div>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>No.</th>
+        <th>Symbol</th>
+        <th>Create Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for stockprice in stockprices %}
+      <tr>
+        <td>{{pagination.start_record_number + loop.index}}</td>
+        <td>
+          <a href="/stockprice/read/{{stockprice.SYMBOL}}" class="text-decoration-none">{{stockprice.SYMBOL}}</a>
+        </td>
+        <td>{{stockprice.CREATED_AT}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endblock %}
+  {% block paginations_container %}
+  {% include 'templates/pagination_template.html' %}
+</form>
+{% endblock %}
