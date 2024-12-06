@@ -1,0 +1,93 @@
+{% extends "templates/main_template.html"%}
+{% block title %}
+Comment Detail
+{% endblock %}
+
+{% block main_container %}
+<div class="container-fluid px-4">
+  <!-- 상단 헤더 영역 -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="border-bottom pb-2">Comment Details</h2>
+    </div>
+  </div>
+
+  <form action="">
+    <div class="row mb-4">
+      <!-- 메인 정보 카드 -->
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">Comment Information</h5>
+          </div>
+          <div class="card-body">
+            <div class="row mb-3">
+              <div class="col-2 fw-bold">Symbol:</div>
+              <div class="col-10">{{comment.SYMBOL}}</div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-2 fw-bold">Comment:</div>
+              <div class="col-10">
+                <div class="p-3 bg-light rounded">
+                  <p class="lead mb-0">{{comment.COMMENT}}</p>
+                </div>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-2 fw-bold">Date:</div>
+              <div class="col-10">{{comment.DATETIME}}</div>
+            </div>
+            <div class="row">
+              <div class="col-2 fw-bold">Created At:</div>
+              <div class="col-10">{{comment.CREATED_AT}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 버튼 영역 -->
+    <div class="row">
+      <div class="col-12">
+        <div class="d-flex justify-content-end">
+          <button type="submit" class="btn btn-primary" formaction="/tossComments/list" formmethod="get">
+            <i class="fas fa-list me-1"></i> Back to List
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Font Awesome CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<!-- 추가 스타일 -->
+<style>
+  .card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: box-shadow 0.3s ease-in-out;
+  }
+  
+  .card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  }
+
+  .lead {
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+
+  .btn {
+    padding: 0.5rem 1.5rem;
+  }
+
+  .card-header {
+    padding: 1rem;
+  }
+
+  .bg-light {
+    background-color: #f8f9fa !important;
+  }
+</style>
+{% endblock %}

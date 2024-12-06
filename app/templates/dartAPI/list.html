@@ -1,0 +1,53 @@
+{% extends "templates/main_template.html"%}
+{% block title %}
+Financial Statements
+{% endblock %}
+
+{% block main_container %}
+<form>
+  <div class="row mb-3">
+    <div class="col-2">
+      <select class="form-select" name="key_name">
+        <option value="CORP_CODE" {{ 'selected' if request._query_params.key_name=='CORP_CODE' else '' }}>CORP_CODE</option>
+        <option value="BUSINESS_YEAR" {{ 'selected' if request._query_params.key_name=='BUSINESS_YEAR' else '' }}>BUSINESS_YEAR</option>
+      </select>
+    </div>
+    <div class="col-6">
+      <input class="form-control" placeholder="기업코드 또는 회계연도(4자리) " name="word" value="{{request._query_params.word}}">
+    </div>
+    <div class="col-4">
+      <button type="submit" class="btn btn-primary" formaction="/dartAPI/list" formmethod="get">
+        Search <span class="badge bg-success" id="">{{pagination.total_records}}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th style="width: 5%">No.</th>
+          <th style="width: 15%">기업고유번호</th>
+          <th style="width: 50%">Blk1</th>
+          <th style="width: 15%">Blk2</th>
+          <th style="width: 15%">Blk3</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for comment in comments %}
+        <tr>
+          <td>{{pagination.start_record_number + loop.index}}</td>
+          <td>{{comment.CORP_CODE}}</td>
+          <td class="text-break">
+            <a href="/dartAPI/read/{{comment.id}}" class="text-decoration-none">{{comment.CORP_CODE}}</a>
+          </td>
+          <td>{{comment.AUTHOR if comment.AUTHOR else '-'}}</td>
+          <td>{{comment.DATE if comment.DATE else '-'}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include 'templates/pagination_template.html' %}
+</form>
+{% endblock %}

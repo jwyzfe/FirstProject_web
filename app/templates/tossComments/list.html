@@ -1,0 +1,53 @@
+{% extends "templates/main_template.html"%}
+{% block title %}
+Toss Comments List
+{% endblock %}
+
+{% block main_container %}
+<form>
+  <div class="row mb-3">
+    <div class="col-2">
+      <select class="form-select" name="key_name">
+        <option value="SYMBOL" {{ 'selected' if request._query_params.key_name=='SYMBOL' else '' }}>Symbol</option>
+        <option value="COMMENT" {{ 'selected' if request._query_params.key_name=='COMMENT' else '' }}>Comment</option>
+      </select>
+    </div>
+    <div class="col-6">
+      <input class="form-control" placeholder="검색어 입력" name="word" value="{{request._query_params.word}}">
+    </div>
+    <div class="col-4">
+      <button type="submit" class="btn btn-primary" formaction="/tossComments/list" formmethod="get">
+        Search <span class="badge bg-success" id="">{{pagination.total_records}}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th style="width: 5%">No.</th>
+          <th style="width: 15%">Symbol</th>
+          <th style="width: 50%">Comment</th>
+          <th style="width: 15%">Author</th>
+          <th style="width: 15%">Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for comment in comments %}
+        <tr>
+          <td>{{pagination.start_record_number + loop.index}}</td>
+          <td>{{comment.SYMBOL}}</td>
+          <td class="text-break">
+            <a href="/tossComments/read/{{comment.id}}" class="text-decoration-none">{{comment.COMMENT}}</a>
+          </td>
+          <td>{{comment.AUTHOR if comment.AUTHOR else '-'}}</td>
+          <td>{{comment.DATE if comment.DATE else '-'}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include 'templates/pagination_template.html' %}
+</form>
+{% endblock %}
