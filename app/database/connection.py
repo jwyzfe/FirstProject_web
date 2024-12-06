@@ -4,9 +4,9 @@ from beanie import init_beanie, PydanticObjectId
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings
+
 from app.models.tossComments import tossComments
 from app.models.dartAPI import dartAPI
-from app.models.users import User
 from app.models.stockprice import Stockprice
 from app.models.stocktwits import Stocktwits
 
@@ -20,7 +20,7 @@ class Settings(BaseSettings):
 
     async def initialize_database(self):
         client = AsyncIOMotorClient(self.DATABASE_URL)
-        await init_beanie(database=client.get_default_database(), document_models=[User, Stockprice, Stocktwits, tossComments, dartAPI])
+        await init_beanie(database=client.get_default_database(), document_models=[ Stockprice, Stocktwits, tossComments, dartAPI])
 
     class Config:
         env_file = os.path.join("app",".env")
