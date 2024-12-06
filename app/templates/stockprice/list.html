@@ -7,23 +7,17 @@ Member List
 <form>
   <!-- 검색 항목 추가 필요 -->
   <div class="row mb-3">
-    <div class="col-3">
-      <select class="form-select" name="search_type">
-        <option value="symbol" {{ 'selected' if request._query_params.search_type=='symbol' else '' }}>Symbol</option>
+    <div class="col-2">
+      <select class="form-select" name="market">
+        <option value="all" {{ 'selected' if request._query_params.market=='all' else '' }}>All</option>
+        <option value="kr" {{ 'selected' if request._query_params.market=='kr' else '' }}>Korea</option>
+        <option value="us" {{ 'selected' if request._query_params.market=='us' else '' }}>USA</option>
       </select>
     </div>
+    <div class="col-6">
+      <input class="form-control" placeholder="Symbol 검색" name="search_word" value="{{request._query_params.search_word}}">
+    </div>
     <div class="col-4">
-      <input class="form-control" placeholder="검색어 입력" name="search_word" value="{{request._query_params.search_word}}">
-    </div>
-    <!--
-    <div class="col-2">
-      <input type="date" class="form-control" name="start_date" value="{{request._query_params.start_date}}">
-    </div>
-    <div class="col-2">
-      <input type="date" class="form-control" name="end_date" value="{{request._query_params.end_date}}">
-    </div>
-    -->
-    <div class="col-3">
       <button type="submit" class="btn btn-primary" formaction="/stockprice/list" formmethod="get">
         Search <span class="badge bg-success">{{pagination.total_records}}</span>
       </button>
