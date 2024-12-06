@@ -13,29 +13,14 @@ Errors
             이는 협업이 용이해지고, 빠른 배포와 테스트 환경 구축에 큰 도움.
         </p>
         <div class="row">
-        <form action="/mains/home">
-            <!-- id -->
-            <div class="col-4">ID : </div>
-            <div class="col-8">
-                <input type="text" name="id" id="" class="form-control" value="{{request.query_params['id']}}">
-            </div>
-            <!-- pw -->
-            <div class="col-4">PW : </div>
-            <div class="col-8">
-                <input type="text" name="pw" id="" class="form-control">
-            </div>
-            <!-- checked -->
-            <div class="col-4">Checked : </div>
-            <div class="col-8">
-                <select name="check" id="" class="form-select">
-                    <option value="car_01" {{'selected' if request.query_params['check'] == 'car_02' else''}}>봉고</option>
-                    <option value="car_02" {{'selected' if request.query_params['check'] == 'car_02' else''}}>그랜저</option>
-                </select>
-            </div>
-            <!-- button -->
-            <div class="col-4">
-                <button class="btn btn-primary">확인</button>
-            </div>
+        <form action="/DB_SGMN/COL_SCRAPPING_HANKYUNG_HISTORY"> <!--변경 전 /main/home -->
+            <div>id</div>
+            <div>CONTENT</div>
+            <div>CREATED_AT</div>
+            <div>DATE</div>
+            <div>LINK</div>
+            <div>TITLE</div>
+            <!-- 바꾼 부분 NOSQL 목록 상단 이름 -->
         </form>
         </div>
         <!-- YouTube Video Embed with More Rounded Corners 

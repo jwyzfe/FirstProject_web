@@ -22,6 +22,7 @@ app.add_middleware(
 async def read_root():
     return {"Hello": "World"}
 
+# templates = Jinja2Templates(directory="app/templates/")
 templates = Jinja2Templates(directory="app/templates/")
 
 
