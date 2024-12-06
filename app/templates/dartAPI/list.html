@@ -27,10 +27,11 @@ Financial Statements
       <thead>
         <tr>
           <th style="width: 5%">No.</th>
-          <th style="width: 15%">기업고유번호</th>
-          <th style="width: 50%">Blk1</th>
-          <th style="width: 15%">Blk2</th>
-          <th style="width: 15%">Blk3</th>
+          <th style="width: 35%">기업고유번호</th>
+          <th style="width: 35%">기업명</th>
+          <th style="width: 10%">회계연도</th>
+          <th style="width: 15%">회계처리방식</th>
+
         </tr>
       </thead>
       <tbody>
@@ -41,8 +42,8 @@ Financial Statements
           <td class="text-break">
             <a href="/dartAPI/read/{{comment.id}}" class="text-decoration-none">{{comment.CORP_CODE}}</a>
           </td>
-          <td>{{comment.AUTHOR if comment.AUTHOR else '-'}}</td>
-          <td>{{comment.DATE if comment.DATE else '-'}}</td>
+          <td>{{comment.BUSINESS_YEAR if comment.BUSINESS_YEAR else '-'}}</td>
+          <td>{{comment.FINANCIAL_STATEMENT_NAME if comment.FINANCIAL_STATEMENT_NAME else '-'}}</td>
         </tr>
         {% endfor %}
       </tbody>
