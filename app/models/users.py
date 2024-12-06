@@ -31,13 +31,11 @@ from pydantic import BaseModel, EmailStr, Field
 ''' 기사클릭시 내용을 어떻게 구현(?) 나타낼지? '''
 
 class Hankyung(Document):
-    CONTENTS: str
+    CONTENT: str
     CREATED_AT: datetime = Field(default_factory=datetime.now) # 자동으로 현재 시간
     DATE: str
     LINK: str
     TITLE: str
     
-
-class Settings:
-    name = "COL_SCRAPPING_HANKYUNG_HISTORY"
-
+    class Settings:
+        name = "COL_SCRAPPING_HANKYUNG_HISTORY"

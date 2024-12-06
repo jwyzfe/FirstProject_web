@@ -64,10 +64,8 @@ from typing import Optional
 
 # 1. 기사 목록 조회 with Pagination
 
-# @router.get("/articles/list/{page_number}")
-
-@router.get("/articles/list") # 검색 with pagination
-
+@router.get("/list/{page_number}")
+@router.get("/list") # 검색 with pagination 
 # http://127.0.0.1:8000/users/list_jinja_pagination?key_name=name&word=김
 # http://127.0.0.1:8000/users/list_jinja_pagination/2?key_name=name&word=
 # http://127.0.0.1:8000/users/list_jinja_pagination/2?key_name=name&word=김
@@ -79,7 +77,7 @@ async def list_articles(request:Request, page_number: Optional[int] = 1):
 
     # 검색 조건 설정(예: 제목 검색)
     try :
-        conditions = {query_params['key_name'] : { '$regex': query_params["word"] }}
+        conditions = {query_params['key_name'].upper() : { '$regex': query_params["word"] }}
     except KeyError:
         pass
 

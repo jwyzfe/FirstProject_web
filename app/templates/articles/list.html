@@ -1,0 +1,58 @@
+{% extends "templates/main_template.html"%}
+{% block title %}
+Article List
+{% endblock %}
+
+{% block main_container %}
+<form>
+  <!-- 검색 항목 추가 필요 -->
+  <div class="row">
+    <div class="col-2">
+      <select class="form-select" name="key_name">
+        <option value="title" {{ 'selected' if request.query_params.key_name=='title' else '' }}>Title</option>
+        <!-- 바뀌기전 <option value="title" {{ 'selected' if request._query_params.key_name=='title' else '' }}>Title</option> -->
+        <option value="date" {{ 'selected' if request.query_params.key_name=='date' else '' }}>Date</option>
+        <!-- 바뀌기전 <option value="date" {{ 'selected' if request._query_params.key_name=='date' else '' }}>Date</option> -->
+        <option value="no." {{ 'selected' if request.query_params.key_name=='no.' else '' }}>No.</option>
+        <!-- 바뀌기전 <option value="no." {{ 'selected' if request._query_params.key_name=='no.' else '' }}>No.</option> -->
+      </select>
+    </div>
+    <div class="col-6">
+      <input class="form-control" placeholder="Enter Search!" name="word" value="{{ request.query_params.get('word', '') }}">
+      <!-- 바뀌기전 <input class="form-control" placeholder="Enter Search!" name="word" value="{{request.query_params.word}}"> -->
+    </div>
+    <div class="col-4">
+      <button type="submit" class="btn btn-primary" formaction="/articles/list" formmethod="get">
+        Search <span class="badge bg-success" id="">{{pagination.total_records}}</span>
+      </button>
+    </div>
+  </div>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>No.</th>
+        <th>Title</th>
+        <th>Date</th>
+        <th>Content</th> <!--추가 사항-->
+        <th>Link</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for article in articles %}
+      <tr>
+        <td>{{pagination.start_record_number + loop.index}}</td>
+        <td>
+          <a href="/articles/read/{{article._id}}" class="text-decoration-none">{{article.TITLE | truncate(15, true, '...')}}</a>
+        </td>
+        <td>{{article.DATE}}</td>
+        <td>{{ article.CONTENT | truncate(30, true, '...') }}</td> <!--Summary 랑 어떻게 매치 시킬지-->
+        <td><a href="{{article.LINK}}" target="_blank">{{article.LINK}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endblock %}
+  {% block paginations_container %}
+  {% include 'templates/pagination_template.html' %}
+</form>
+{% endblock %}
