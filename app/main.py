@@ -18,7 +18,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
+#@app.get("/")
 async def read_root():
     return {"Hello": "World"}
 

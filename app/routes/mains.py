@@ -13,15 +13,21 @@ router = APIRouter()
 collection_news_yahoo = Database(News_yahoo)
 collection_marketsenti = Database(Marketsenti)
 
-@router.get("/home")        #브라우저에서 /home 경로로 접근하면 이 핸들러 함수가 실행됩니다.
+# @router.get("/home")        #브라우저에서 /home 경로로 접근하면 이 핸들러 함수가 실행됩니다.
+# async def main(request: Request):
+#     news_yahoo_list = await collection_news_yahoo.get_all()  # 모든 뉴스 데이터를 가져옵니다.
+#     marketsenti_list = await collection_marketsenti.get_all()  
+#     context={'request':request,
+#              'news_yahoo_list': news_yahoo_list,  
+#         'marketsenti_list': marketsenti_list}
+#     return templates.TemplateResponse(name="mains/senti.html"
+#                                       , context=context )
+
+@router.get("/home")
 async def main(request: Request):
-    news_yahoo_list = await collection_news_yahoo.get_all()  # 모든 뉴스 데이터를 가져옵니다.
-    marketsenti_list = await collection_marketsenti.get_all()  
-    context={'request':request,
-             'news_yahoo_list': news_yahoo_list,  
-        'marketsenti_list': marketsenti_list}
-    return templates.TemplateResponse(name="mains/senti.html"
-                                      , context=context )
+    context={'request':request}
+    return templates.TemplateResponse(name="mains/home.html"
+                                      , context=context)
     
     
     

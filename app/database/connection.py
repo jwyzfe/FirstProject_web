@@ -9,7 +9,7 @@ from app.models.tossComments import tossComments
 from app.models.dartAPI import dartAPI
 from app.models.stockprice import Stockprice
 from app.models.stocktwits import Stocktwits
-from app.models.users import User
+
 from app.models.marketsenti import Marketsenti
 from app.models.news_yahoo import News_yahoo
 from datetime import datetime
