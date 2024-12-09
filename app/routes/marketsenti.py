@@ -20,37 +20,47 @@ async def list(request: Request, page_number: Optional[int] = 1):
 
     user_dict = dict(request.query_params)
     query_params = dict(request.query_params)
-    keyword = query_params.get("keyword","").strip()
+    keyword = query_params.get("word","").strip()
     field = query_params.get("key_name", "")
     conditions = {}
     if keyword:  # 검색어가 입력된 경우
         try:
-            if field in ["MACD_LINE", "RSI"]:  # 숫자 필드 검색 처리
+            if field in ["MACD_LINE", "RSI","MACD_HISTOGRAM", "SIGNAL_LINE"]:  # 숫자 필드 검색 처리
                 conditions[field] = float(keyword)
             else:  # 문자열 필드 검색 처리
                 conditions[field] = {"$regex": keyword, "$options": "i"}
         except ValueError:
-            pass
+            raise HTTPException(staues_code=400, detail="Invalid keyword format")
 
     marketsenti_list, pagination = await collection_marketsenti.getsbyconditionswithpagination(conditions 
-        ,page_number
+        ,page_number,sort_field="TICKER"
     )
     
     pagination.query_params = f"key_name={field}&word={keyword}"
     
-    return templates.TemplateResponse(name="marketsenti/list.html"      #marketsenti_list와 pagination 데이터를 사용하여 HTML 페이지 생성.
-                                      , context={'request':request
-                                                 , 'marketsenti_list' : marketsenti_list   # db데이터 연결 이게 templates로 연결
-                                                  ,'pagination' : pagination 
-                                                  })
+    return templates.TemplateResponse(
+        "marketsenti/list.html",  # marketsenti_list와 pagination 데이터를 사용하여 HTML 페이지 생성
+        {
+            'request': request,
+            'marketsenti_list': marketsenti_list,  # DB에서 가져온 데이터
+            'pagination': pagination  # 페이지네이션 정보
+        }
+    )
     #breakpoint걸어놓고 request확인
 
 # 회원 상세정보 /users/read -> users/read.html
 # Path parameters : /users/read/id or /users/read/uniqe_name
 @router.get("/read/{object_id}")
-async def read(request:Request, object_id:PydanticObjectId):
+async def read(request: Request, object_id: PydanticObjectId):
     marketsenti = await collection_marketsenti.get(object_id)
-    return templates.TemplateResponse(name="marketsenti/read.html"
-                                      , context={'request':request
-                                                 , 'marketsenti':marketsenti})
+    if not marketsenti:
+        raise HTTPException(status_code=404, detail="Item not found")
+    
+    return templates.TemplateResponse(
+        "marketsenti/read.html",
+        {
+            'request': request,
+            'marketsenti': marketsenti
+        }
+    )
 

@@ -148,9 +148,9 @@ class Database:
     # column 값으로 여러 Documents with pagination 가져오기
     async def getsbyconditionswithpagination(self
                                              , conditions:dict, page_number=1
-                                             , records_per_page=10, pages_per_block=5
+                                             , records_per_page=10, pages_per_block=10
                                              , sorted = '-'
-                                             , sort_field:str = 'create_date') -> [Any]:
+                                             , sort_field:str = 'create_date', ) -> [Any]:
         try:
             total = await self.model.find(conditions).count()
         except:
@@ -161,7 +161,7 @@ class Database:
         documents = await self.model.find(conditions).sort(f'{sorted}{sort_field}').skip(pagination.start_record_number).limit(pagination.records_per_page).to_list()
         if documents:
             return documents, pagination
-        return [], pagination     
+        return [], pagination  
 
 
 if __name__ == '__main__':

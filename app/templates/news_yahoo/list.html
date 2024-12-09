@@ -11,8 +11,9 @@ Member List
   <div class="row">
     <div class="col-2">
       <select class="form-select" name="key_name">
-        <option value="name" {{ 'selected' if request.query_params.key_name=='name' else '' }}>name</option>
-        <option value="email" {{ 'selected' if request.query_params.key_name=='email' else '' }}>email</option>
+        <option value="TITLE" {{ 'selected' if request.query_params.key_name=='TITLE' else '' }}>title</option>
+        <option value="DATE" {{ 'selected' if request.query_params.key_name=='DATE' else '' }}>date</option>
+        <option value="CONTENTS" {{ 'selected' if request.query_params.key_name=='CONTENTS' else '' }}>contents</option>
       </select>
     </div>
     <div class="col-6">
@@ -36,16 +37,15 @@ Member List
       </tr>
     </thead>
     <tbody>
-      {% for user in marketsenti_list %}
+      {% for user in news_yahoo_list %}
       <tr>
         <td>{{pagination.start_record_number + loop.index}}</td>
         <td>
-          <a href="/news_yahoo/read/{{user.id}}" class="text-decoration-none">{{user.TICKER}}</a>
+          <a href="/news_yahoo/read/{{user.id}}" class="text-decoration-none">{{user.TITLE}}</a>
         </td>
-        <td>{{user.TITLE}}</td>
-        <td>{{user.DATE.strftime('%Y.%m.%d %H:%M')}}</td>
+        <td>{{user.DATE}}</td>
         <td>{{user.CONTENTS}}</td>
-        <td><a href="{{news.NEWS_URL}}" target="_blank">Link</a></td>
+        <td><a href="{{user.NEWS_URL}}" target="_blank">Link</a></td>
         <td>{{user.CREATED_AT.strftime('%Y.%m.%d %H:%M')}}</td>
       </tr>
       {% endfor %}
