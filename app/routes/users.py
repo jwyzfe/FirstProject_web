@@ -82,7 +82,7 @@ async def list_articles(request:Request, page_number: Optional[int] = 1):
         pass
 
     articles_list, pagination = await collection_hankyung.getsbyconditionswithpagination(conditions
-                                                                     ,page_number)
+                                                                     ,page_number,sort_field="DATE")
     return templates.TemplateResponse(name="articles/list.html"
                                       , context={'request':request
                                                  , 'articles' : articles_list
