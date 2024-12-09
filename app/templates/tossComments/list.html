@@ -6,6 +6,15 @@ Toss Comments List
 {% block main_container %}
 <form>
   <div class="row mb-3">
+    <!-- 상단 카테고리 네비게이션 -->
+    <div class="col-12 mb-3">
+      <div class="nav nav-pills">
+        <a class="nav-link {{ 'active' if category == 'TOSS' else '' }}" href="?category=TOSS">TOSS</a>
+        <a class="nav-link {{ 'active' if category == 'NAVER' else '' }}" href="?category=NAVER">NAVER</a>
+        <a class="nav-link {{ 'active' if category == 'DAUM' else '' }}" href="?category=DAUM">DAUM</a>
+      </div>
+    </div>
+    
     <div class="col-2">
       <select class="form-select" name="key_name">
         <option value="SYMBOL" {{ 'selected' if request._query_params.key_name=='SYMBOL' else '' }}>Symbol</option>
@@ -17,7 +26,7 @@ Toss Comments List
     </div>
     <div class="col-4">
       <button type="submit" class="btn btn-primary" formaction="/tossComments/list" formmethod="get">
-        Search <span class="badge bg-success" id="">{{pagination.total_records}}</span>
+        Search <span class="badge bg-success">{{pagination.total_records}}</span>
       </button>
     </div>
   </div>
@@ -50,4 +59,17 @@ Toss Comments List
   </div>
   {% include 'templates/pagination_template.html' %}
 </form>
+
+<!-- 추가 스타일 -->
+<style>
+  .nav-pills .nav-link {
+    margin-right: 0.5rem;
+  }
+  .nav-pills .nav-link.active {
+    background-color: #0d6efd;
+  }
+  .table td {
+    vertical-align: middle;
+  }
+</style>
 {% endblock %}
