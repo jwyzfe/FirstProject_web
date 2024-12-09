@@ -22,31 +22,15 @@ async def list(request:Request, page_number: Optional[int] = 1):
     query_params = dict(request._query_params)
     conditions = {}
     
-    # 마켓 필터링 추가
-    market = query_params.get('market', 'all')  # 기본값은 'all'
-    if market == 'kr':
-        # 한국 주식 (.KS 또는 .KQ로 끝나는 심볼)
-        conditions['SYMBOL'] = {'$regex': '\\.K[SQ]$'}
-    elif market == 'us':
-        # 미국 주식 (.KS 또는 .KQ로 끝나지 않는 심볼)
-        conditions['SYMBOL'] = {'$not': {'$regex': '\\.K[SQ]$'}}
-
-    # 기존 검색 조건 추가
+    # market 변수를 먼저 정의
+    market = query_params.get('market', 'all')
+    
+    # 심볼 검색 - 정확한 매칭만 사용
     if 'search_word' in query_params and query_params['search_word']:
-        search_word = query_params['search_word'].upper()
-        if market == 'kr':
-            conditions['SYMBOL'] = {
-                '$regex': f'^{search_word}.*\\.K[SQ]$'
-            }
-        elif market == 'us':
-            conditions['SYMBOL'] = {
-                '$and': [
-                    {'$eq': search_word},
-                    {'$not': {'$regex': '\\.K[SQ]$'}}
-                ]
-            }
-        else:
-            conditions['SYMBOL'] = search_word
+        conditions['SYMBOL'] = query_params['search_word'].upper()
+    # 검색어가 없을 때만 마켓 필터링 적용
+    elif market != 'all':
+        conditions['market'] = market
 
     summaries, pagination = await collection_stockprice.get_symbol_summary_with_pagination(
         conditions=conditions,

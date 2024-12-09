@@ -169,10 +169,25 @@ class Database:
                                             , pages_per_block=5) -> [Any]:
         try:
             # 먼저 모든 유니크한 심볼 목록을 가져옴
-            all_symbols = await self.model.distinct('SYMBOL', conditions)
+            all_symbols = await self.model.distinct('SYMBOL')
             all_symbols.sort()  # 알파벳 순 정렬
-            total = len(all_symbols)
-            
+
+            # 검색어가 있는 경우
+            if 'SYMBOL' in conditions:
+                filtered_symbols = [s for s in all_symbols if s == conditions['SYMBOL']]
+            # 마켓 필터링
+            elif 'market' in conditions:
+                if conditions['market'] == 'kr':
+                    filtered_symbols = [s for s in all_symbols if s.endswith(('.KS', '.KQ'))]
+                elif conditions['market'] == 'us':
+                    filtered_symbols = [s for s in all_symbols if not s.endswith(('.KS', '.KQ'))]
+                else:
+                    filtered_symbols = all_symbols
+            else:
+                filtered_symbols = all_symbols
+
+            # 페이지네이션 계산
+            total = len(filtered_symbols)
             pagination = Paginations(
                 total_records=total,
                 current_page=page_number,
@@ -180,23 +195,25 @@ class Database:
                 pages_per_block=pages_per_block
             )
 
-            # 현재 페이지에 해당하는 심볼들만 선택
-            paged_symbols = all_symbols[pagination.start_record_number:pagination.start_record_number + pagination.records_per_page]
+            # 현재 페이지의 심볼만 선택
+            start_idx = pagination.start_record_number
+            end_idx = start_idx + pagination.records_per_page
+            paged_symbols = filtered_symbols[start_idx:end_idx]
             
             # 선택된 심볼들의 최신 데이터 조회
-            formatted_results = []
+            results = []
             for symbol in paged_symbols:
-                latest_doc = await self.model.find_one(
-                    {"SYMBOL": symbol}, 
+                doc = await self.model.find_one(
+                    {"SYMBOL": symbol},
                     sort=[("CREATED_AT", -1)]
                 )
-                if latest_doc:
-                    formatted_results.append({
-                        "SYMBOL": latest_doc.SYMBOL,
-                        "CREATED_AT": latest_doc.CREATED_AT
+                if doc:
+                    results.append({
+                        "SYMBOL": doc.SYMBOL,
+                        "CREATED_AT": doc.CREATED_AT
                     })
             
-            return formatted_results, pagination
+            return results, pagination
 
         except Exception as e:
             print(f"Error in get_symbol_summary_with_pagination: {e}")
