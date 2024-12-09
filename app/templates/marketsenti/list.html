@@ -1,0 +1,61 @@
+{% extends "templates/main_template.html"%}
+{% block title %}
+Member List
+{% endblock %}
+
+{% block main_container %}
+<form>
+  <!-- 검색 항목 -->
+  <div class="row mb-3">
+    <div class="col-2">
+      <select class="form-select" name="key_name">
+        <option value="TICKER" {{ 'selected' if request.query_params.get('key_name') == 'TICKER' else '' }}>TICKER</option>
+        <option value="DATE" {{ 'selected' if request.query_params.get('key_name') == 'DATE' else '' }}>DATE</option>
+      </select>
+    </div>
+    <div class="col-6">
+      <input class="form-control" placeholder="Enter Search!" name="word" value="{{ request.query_params.get('word', '') }}">
+    </div>
+    <div class="col-4">
+      <button type="submit" class="btn btn-primary" formaction="/marketsenti/list" formmethod="get">
+        Search <span class="badge bg-success">{{ pagination.total_records }}</span>
+      </button>
+    </div>
+  </div>
+  <!-- 데이터 테이블 -->
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>NO.</th>
+        <th>TICKER</th>
+        <th>MACD_HISTOGRAM</th>
+        <th>MACD_LINE</th>
+        <th>RSI</th>
+        <th>SIGNAL_LINE</th>
+        <th>DATE</th>
+        <th>CREATE_DATE</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in marketsenti_list %}
+      <tr>
+        <td>{{ pagination.start_record_number + loop.index }}</td>
+        <td>
+          <a href="/marketsenti/read/{{ user.id }}" class="text-decoration-none">{{ user.TICKER }}</a>
+        </td>
+        <td>{{ user.MACD_HISTOGRAM }}</td>
+        <td>{{ user.MACD_LINE }}</td>
+        <td>{{ user.RSI }}</td>
+        <td>{{ user.SIGNAL_LINE }}</td>
+        <td>{{ user.DATE.strftime('%Y.%m.%d %H:%M') }}</td>
+        <td>{{ user.CREATED_AT.strftime('%Y.%m.%d %H:%M') }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</form>
+{% endblock %}
+
+{% block paginations_container %}
+{% include 'templates/pagination_template.html' %}
+{% endblock %}

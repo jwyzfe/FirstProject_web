@@ -1,0 +1,58 @@
+<!-- 회원목록을 보여주는 페이지 -->
+
+{% extends "templates/main_template.html"%}
+{% block title %}
+Member List
+{% endblock %}
+
+{% block main_container %}
+<form>
+  <!-- 검색 항목 추가 필요 -->
+  <div class="row">
+    <div class="col-2">
+      <select class="form-select" name="key_name">
+        <option value="name" {{ 'selected' if request.query_params.key_name=='name' else '' }}>name</option>
+        <option value="email" {{ 'selected' if request.query_params.key_name=='email' else '' }}>email</option>
+      </select>
+    </div>
+    <div class="col-6">
+      <input class="form-control" placeholder="Enter Search!" name="word" value="{{request.query_params.word}}">
+    </div>
+    <div class="col-4">
+      <button type="submit" class="btn btn-primary" formaction="/news_yahoo/list" formmethod="get">
+        Search <span class="badge bg-success" id="">{{pagination.total_records}}</span>
+      </button>
+    </div>
+  </div>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>NO.</th>
+        <th>TITLE</th>
+        <th>DATE</th>
+        <th>CONTENTS</th>
+        <th>NEWS_URL</th>
+        <th>CREATE_AT</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in marketsenti_list %}
+      <tr>
+        <td>{{pagination.start_record_number + loop.index}}</td>
+        <td>
+          <a href="/news_yahoo/read/{{user.id}}" class="text-decoration-none">{{user.TICKER}}</a>
+        </td>
+        <td>{{user.TITLE}}</td>
+        <td>{{user.DATE.strftime('%Y.%m.%d %H:%M')}}</td>
+        <td>{{user.CONTENTS}}</td>
+        <td><a href="{{news.NEWS_URL}}" target="_blank">Link</a></td>
+        <td>{{user.CREATED_AT.strftime('%Y.%m.%d %H:%M')}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endblock %}
+  {% block paginations_container %}
+  {% include 'templates/pagination_template.html' %}
+</form>
+{% endblock %}
