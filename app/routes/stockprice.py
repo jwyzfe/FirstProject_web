@@ -21,33 +21,32 @@ from typing import Optional
 async def list(request:Request, page_number: Optional[int] = 1):
     query_params = dict(request._query_params)
     conditions = {}
-    # 검색 조건 구성
-    if 'search_type' in query_params and 'search_word' in query_params and query_params['search_word']:
-        search_word = query_params['search_word']
-        
-        if query_params['search_type'] == 'symbol':
-            # Symbol은 정확히 일치
-            conditions['SYMBOL'] = search_word.upper()
-        elif query_params['search_type'] == 'content':
-            # Content는 부분 일치
-            conditions['CONTENT'] = {'$regex': search_word, '$options': 'i'}
-        elif query_params['search_type'] == 'links':
-            # Links는 부분 일치
-            conditions['LINKS'] = {'$regex': search_word, '$options': 'i'}
+    
+    # market 변수를 먼저 정의
+    market = query_params.get('market', 'all')
+    
+    # 심볼 검색 - 정확한 매칭만 사용
+    if 'search_word' in query_params and query_params['search_word']:
+        conditions['SYMBOL'] = query_params['search_word'].upper()
+    # 검색어가 없을 때만 마켓 필터링 적용
+    elif market != 'all':
+        conditions['market'] = market
 
-    # 심볼 요약 정보 조회 (페이지네이션)
     summaries, pagination = await collection_stockprice.get_symbol_summary_with_pagination(
         conditions=conditions,
-        page_number=page_number)
+        page_number=page_number
+    )
 
-    # summaries, pagination = await collection_stockprice.getsbyconditionswithpagination(
-    #     conditions, page_number)
+    return templates.TemplateResponse(
+        name="stockprice/list.html",
+        context={
+            'request': request,
+            'stockprices': summaries,
+            'pagination': pagination,
+            'current_market': market
+        }
+    )
 
-
-    return templates.TemplateResponse(name="stockprice/list.html"
-                                      , context={'request':request
-                                                 , 'stockprices' : summaries
-                                                  ,'pagination' : pagination })
 from beanie import PydanticObjectId
 # 회원 상세정보 /users/read -> users/read.html
 # Path parameters : /users/read/id or /users/read/uniqe_name
