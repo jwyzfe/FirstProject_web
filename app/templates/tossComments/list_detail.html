@@ -1,0 +1,83 @@
+{% extends "templates/main_template.html"%}
+{% block title %}
+Comment Detail
+{% endblock %}
+{% block main_container %}
+{% set object_id = request.path_params.get('object_id', '') %}
+<form>
+  <!-- 상단 카테고리 표시 -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">{{comment.category}}</li>
+          <li class="breadcrumb-item active">{{comment.SYMBOL}}</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-2">
+      <select class="form-select" name="comment_field">
+        <option value="AUTHOR" {{ 'selected' if request._query_params.comment_field=='AUTHOR' else '' }}>Author</option>
+        <option value="CONTENT" {{ 'selected' if request._query_params.comment_field=='CONTENT' else '' }}>Content</option>
+      </select>
+    </div>
+    <div class="col-2">
+      <input type="text" class="form-control" name="search_text" value="{{request._query_params.search_text}}" placeholder="검색어 입력">
+    </div>
+    <div class="col-2">
+      <input type="date" class="form-control" name="start_date" value="{{request._query_params.start_date}}">
+    </div>
+    <div class="col-2">
+      <input type="date" class="form-control" name="end_date" value="{{request._query_params.end_date}}">
+    </div>
+    <div class="col-2">
+      <button type="submit" class="btn btn-primary" formaction="/tossComments/read/{{object_id}}" formmethod="get">
+        Search <span class="badge bg-success">{{pagination.total_records}}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-3">
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary" formaction="/tossComments/list" formmethod="get">
+          <i class="fas fa-arrow-left me-1"></i> Back to List
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>No.</th>
+        <th>Symbol</th>
+        <th>Author</th>
+        <th>Content</th>
+        <th>Date</th>
+        <th>Likes</th>
+        <th>Create Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for comment in comments %}
+      <tr>
+        <td>{{pagination.start_record_number + loop.index}}</td>
+        <td>{{comment.SYMBOL}}</td>
+        <td>{{comment.AUTHOR}}</td>
+        <td>{{comment.CONTENT}}</td>
+        <td>{{comment.DATE}}</td>
+        <td>{{comment.LIKES}}</td>
+        <td>{{comment.CREATED_AT}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</form>
+{% endblock %}
+{% block paginations_container %}
+{% include 'templates/pagination_template.html' %}
+{% endblock %}

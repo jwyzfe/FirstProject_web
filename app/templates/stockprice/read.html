@@ -1,0 +1,52 @@
+{% extends "templates/main_template.html"%}
+
+<title>회원 상세보기</title>
+{% block main_container %}
+
+<!-- {{ user }} -->
+<form action="">
+    <div class="row gap-2 px-5">
+        <div class="col-12 row">
+            <div class="col-4 row">
+                <label class="form-label col-12">
+                    SYMBOL : {{stockprice.SYMBOL}}
+                </label>
+                <label class="form-label col-12">
+                    DATE : {{stockprice.DATE}}
+                </label>
+                <label class="form-label col-12">
+                    OPEN : {{ '%.3f' | format(stockprice.OPEN) }}
+                </label>
+                <label class="form-label col-12">
+                    HIGH : {{ '%.3f' | format(stockprice.HIGH) }}
+                </label>
+                <label class="form-label col-12">
+                    LOW : {{ '%.3f' | format(stockprice.LOW) }}
+                </label>
+                <label class="form-label col-12">
+                    CLOSE : {{ '%.3f' | format(stockprice.CLOSE) }}
+                </label>
+                <label class="form-label col-12">
+                    VOLUME : {{stockprice.VOLUME}}
+                </label>
+                <label class="form-label col-12">
+                    DIVIDENDS : {{stockprice.DIVIDENDS}}
+                </label>
+                <label class="form-label col-12">
+                    STOCKSPLITS : {{stockprice.STOCKSPLITS}}
+                </label>
+                <label class="form-label col-12">
+                    CREATED_AT : {{stockprice.CREATED_AT}}
+                </label>
+            </div>
+            <div class="col-6 row">
+            </div>
+        </div>
+        <div class="col-12 d-flex justify-content-end">
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary" formaction="/stockprice/list" formmethod="get">List</button>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

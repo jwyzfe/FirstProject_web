@@ -1,0 +1,43 @@
+
+{% extends "templates/main_template.html"%}
+
+<title>기사 상세보기</title>
+{% block main_container %}
+
+<form action="">
+    <div class="row gap-2 px-5">
+        <div class="col-12 row">
+            <div class="col-4 row">
+                <label class="form-label col-12">
+                    SYMBOL : {{ comment.SYMBOL}}
+                </label>
+                <label class="form-label col-12">
+                    CONTENT : {{ comment.CONTENT}}
+                </label>
+                <label class="form-label col-12">
+                    {% for link in comment.LINKS %}
+                        <a href="{{ link }}" target="_blank" class="text-decoration-none me-2">{{ link | truncate(30, true, '...') }}</a>
+                        {% if not loop.last %}<br>{% endif %}
+                    {% else %}
+                        -  {# 링크가 없는 경우 표시 #}
+                    {% endfor %}
+                </label>
+                <label class="form-label col-12">
+                    date : {{comment.DATETIME}}
+                </label>
+                <label class="form-label col-12">
+                    create_date : {{comment.CREATED_AT}}
+                </label>
+            </div>
+            <div class="col-6 row">
+            </div>
+        </div>
+        <div class="col-12 d-flex justify-content-end">
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary" formaction="/stocktwits/list" formmethod="get">List</button>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
+

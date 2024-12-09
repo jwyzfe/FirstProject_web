@@ -1,0 +1,56 @@
+{% extends "templates/main_template.html"%}
+{% block title %}
+Member List
+{% endblock %}
+
+{% block main_container %}
+<form>
+  <!-- 검색 항목 추가 필요 -->
+  <div class="row mb-3">
+    <div class="col-4">
+      <div class="btn-group" role="group">
+        <a href="/stockprice/list" class="btn btn-outline-primary {{ 'active' if not request._query_params.market or request._query_params.market=='all' else '' }}">
+          ALL
+        </a>
+        <a href="/stockprice/list?market=kr" class="btn btn-outline-primary {{ 'active' if request._query_params.market=='kr' else '' }}">
+          Korea
+        </a>
+        <a href="/stockprice/list?market=us" class="btn btn-outline-primary {{ 'active' if request._query_params.market=='us' else '' }}">
+          USA
+        </a>
+      </div>
+    </div>
+    <div class="col-5">
+      <input class="form-control" placeholder="Symbol 검색" name="search_word" value="{{request._query_params.search_word}}">
+    </div>
+    <div class="col-3">
+      <button type="submit" class="btn btn-primary" formaction="/stockprice/list" formmethod="get">
+        Search <span class="badge bg-success">{{pagination.total_records}}</span>
+      </button>
+    </div>
+  </div>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>No.</th>
+        <th>Symbol</th>
+        <th>Create Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for stockprice in stockprices %}
+      <tr>
+        <td>{{pagination.start_record_number + loop.index}}</td>
+        <td>
+          <a href="/stockprice/read/{{stockprice.SYMBOL}}" class="text-decoration-none">{{stockprice.SYMBOL}}</a>
+        </td>
+        <td>{{stockprice.CREATED_AT}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endblock %}
+  {% block paginations_container %}
+  {% include 'templates/pagination_template.html' %}
+</form>
+{% endblock %}

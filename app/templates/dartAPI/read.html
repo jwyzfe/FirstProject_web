@@ -1,0 +1,93 @@
+{% extends "templates/main_template.html"%}
+{% block title %}
+Comment Detail
+{% endblock %}
+
+{% block main_container %}
+<div class="container-fluid px-4">
+  <!-- 상단 헤더 영역 -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="border-bottom pb-2">Financial Details</h2>
+    </div>
+  </div>
+
+  <form action="">
+    <div class="row mb-4">
+      <!-- 메인 정보 카드 -->
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">Financial Information</h5>
+          </div>
+          <div class="card-body">
+            <div class="row mb-3">
+              <div class="col-2 fw-bold">CORP_CODE:</div>
+              <div class="col-10">{{comment.CORP_CODE}}</div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-2 fw-bold">FINANCIAL_STATEMENT_NAME:</div>
+              <div class="col-10">
+                <div class="p-3 bg-light rounded">
+                  <p class="lead mb-0">{{comment.FINANCIAL_STATEMENT_NAME}}</p>
+                </div>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-2 fw-bold">BUSINESS_YEAR:</div>
+              <div class="col-10">{{comment.BUSINESS_YEAR}}</div>
+            </div>
+            <div class="row">
+              <div class="col-2 fw-bold">CURRENT_TERM_AMOUNT:</div>
+              <div class="col-10">{{comment.CURRENT_TERM_AMOUNT}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 버튼 영역 -->
+    <div class="row">
+      <div class="col-12">
+        <div class="d-flex justify-content-end">
+          <button type="submit" class="btn btn-primary" formaction="/dartAPI/list" formmethod="get">
+            <i class="fas fa-list me-1"></i> Back to List
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Font Awesome CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<!-- 추가 스타일 -->
+<style>
+  .card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: box-shadow 0.3s ease-in-out;
+  }
+  
+  .card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  }
+
+  .lead {
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+
+  .btn {
+    padding: 0.5rem 1.5rem;
+  }
+
+  .card-header {
+    padding: 1rem;
+  }
+
+  .bg-light {
+    background-color: #f8f9fa !important;
+  }
+</style>
+{% endblock %}

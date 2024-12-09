@@ -1,0 +1,90 @@
+{% extends "templates/main_template.html"%}
+{% block title %}
+Member List
+{% endblock %}
+
+{% block main_container %}
+{% set object_id = request.path_params.get('object_id', '') %}
+<form>
+  <!-- 검색 항목 추가 필요 -->
+  <div class="row mb-3">
+    <div class="col-2">
+      <select class="form-select" name="price_field">
+        <option value="OPEN" {{ 'selected' if request._query_params.price_field=='OPEN' else '' }}>Open</option>
+        <option value="HIGH" {{ 'selected' if request._query_params.price_field=='HIGH' else '' }}>High</option>
+        <option value="LOW" {{ 'selected' if request._query_params.price_field=='LOW' else '' }}>Low</option>
+        <option value="CLOSE" {{ 'selected' if request._query_params.price_field=='CLOSE' else '' }}>Close</option>
+      </select>
+    </div>
+    <div class="col-2">
+      <select class="form-select" name="comparison">
+        <option value="gte" {{ 'selected' if request._query_params.comparison=='gte' else '' }}>gte</option>
+        <option value="lte" {{ 'selected' if request._query_params.comparison=='lte' else '' }}>lte</option>
+      </select>
+    </div>
+    <div class="col-2">
+      <input type="number" step="0.001" class="form-control" name="price_value" value="{{request._query_params.price_value}}" placeholder="가격 입력">
+    </div>
+    <div class="col-2">
+      <input type="date" class="form-control" name="start_date" value="{{request._query_params.start_date}}">
+    </div>
+    <div class="col-2">
+      <input type="date" class="form-control" name="end_date" value="{{request._query_params.end_date}}">
+    </div>
+    <div class="col-2">
+      <button type="submit" class="btn btn-primary" formaction="/stockprice/read/{{object_id}}" formmethod="get">
+        Search <span class="badge bg-success">{{pagination.total_records}}</span>
+      </button>
+    </div>
+  </div>
+  <div class="row mb-3">
+    <div class="col-3">
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary" formaction="/stockprice/list" formmethod="get">Back to the list</button>
+      </div>
+    </div>
+  </div>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>No.</th>
+        <th>Symbol</th>
+        <th>Date</th>
+        <th>Open</th>
+        <th>High</th>
+        <th>Low</th>
+        <th>Close</th>
+        <th>Volume</th>
+        <th>Dividends</th>
+        <th>Stock splits</th>
+        <th>Create Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for stockprice in stockprices %}
+      <tr>
+        <td>{{pagination.start_record_number + loop.index}}</td>
+        <td>
+          <!--
+          <a href="/stockprice/read/{{stockprice.SYMBOL}}" class="text-decoration-none">{{stockprice.SYMBOL}}</a>
+          -->
+          {{stockprice.SYMBOL}}
+        </td>
+        <td>{{stockprice.DATE}}</td>
+        <td>{{ '%.3f' | format(stockprice.OPEN) }}</td>
+        <td>{{ '%.3f' | format(stockprice.HIGH) }}</td>
+        <td>{{ '%.3f' | format(stockprice.LOW) }}</td>
+        <td>{{ '%.3f' | format(stockprice.CLOSE) }}</td>
+        <td>{{stockprice.VOLUME}}</td>
+        <td>{{stockprice.DIVIDENDS}}</td>
+        <td>{{stockprice.STOCKSPLITS}}</td>
+        <td>{{stockprice.CREATED_AT}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endblock %}
+  {% block paginations_container %}
+  {% include 'templates/pagination_template.html' %}
+</form>
+{% endblock %}

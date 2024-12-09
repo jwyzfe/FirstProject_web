@@ -1,0 +1,79 @@
+{% extends "templates/main_template.html"%}
+{% block title %}
+Financial Detail
+{% endblock %}
+{% block main_container %}
+{% set object_id = request.path_params.get('object_id', '') %}
+<form>
+  <div class="row mb-3">
+    <div class="col-2">
+      <select class="form-select" name="financial_field">
+        <option value="REVENUE" {{ 'selected' if request._query_params.financial_field=='REVENUE' else '' }}>Revenue</option>
+        <option value="NET_INCOME" {{ 'selected' if request._query_params.financial_field=='NET_INCOME' else '' }}>Net Income</option>
+        <option value="EPS" {{ 'selected' if request._query_params.financial_field=='EPS' else '' }}>EPS</option>
+        <option value="OPERATING_INCOME" {{ 'selected' if request._query_params.financial_field=='OPERATING_INCOME' else '' }}>Operating Income</option>
+      </select>
+    </div>
+    <div class="col-2">
+      <select class="form-select" name="comparison">
+        <option value="gte" {{ 'selected' if request._query_params.comparison=='gte' else '' }}>gte</option>
+        <option value="lte" {{ 'selected' if request._query_params.comparison=='lte' else '' }}>lte</option>
+      </select>
+    </div>
+    <div class="col-2">
+      <input type="number" step="0.001" class="form-control" name="value" value="{{request._query_params.value}}" placeholder="값 입력">
+    </div>
+    <div class="col-2">
+      <input type="date" class="form-control" name="start_date" value="{{request._query_params.start_date}}">
+    </div>
+    <div class="col-2">
+      <input type="date" class="form-control" name="end_date" value="{{request._query_params.end_date}}">
+    </div>
+    <div class="col-2">
+      <button type="submit" class="btn btn-primary" formaction="/financial/read/{{object_id}}" formmethod="get">
+        Search <span class="badge bg-success">{{pagination.total_records}}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-3">
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary" formaction="/financial/list" formmethod="get">Back to the list</button>
+      </div>
+    </div>
+  </div>
+
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>No.</th>
+        <th>Symbol</th>
+        <th>Date</th>
+        <th>Revenue</th>
+        <th>Net Income</th>
+        <th>EPS</th>
+        <th>Operating Income</th>
+        <th>Create Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for financial in financials %}
+      <tr>
+        <td>{{pagination.start_record_number + loop.index}}</td>
+        <td>{{financial.SYMBOL}}</td>
+        <td>{{financial.DATE}}</td>
+        <td>{{ '%.2f' | format(financial.REVENUE) }}</td>
+        <td>{{ '%.2f' | format(financial.NET_INCOME) }}</td>
+        <td>{{ '%.2f' | format(financial.EPS) }}</td>
+        <td>{{ '%.2f' | format(financial.OPERATING_INCOME) }}</td>
+        <td>{{financial.CREATED_AT}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</form>
+{% endblock %}
+{% block paginations_container %}
+{% include 'templates/pagination_template.html' %}
+{% endblock %}

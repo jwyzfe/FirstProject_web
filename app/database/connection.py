@@ -5,6 +5,12 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings
 
+from app.models.tossComments import tossComments
+from app.models.dartAPI import dartAPI
+from app.models.stockprice import Stockprice
+from app.models.stocktwits import Stocktwits
+
+from datetime import datetime
 
 from app.models.users import Hankyung #변경
 
@@ -14,7 +20,7 @@ class Settings(BaseSettings):
 
     async def initialize_database(self):
         client = AsyncIOMotorClient(self.DATABASE_URL)
-        await init_beanie(database=client.get_default_database(), document_models=[Hankyung]) #변경
+        await init_beanie(database=client.get_default_database(), document_models=[ Stockprice, Stocktwits, tossComments, dartAPI, Hankyung])
 
     class Config:
         env_file = os.path.join("app",".env")
@@ -143,7 +149,7 @@ class Database:
                                              , conditions:dict, page_number=1
                                              , records_per_page=10, pages_per_block=5
                                              , sorted = '-'
-                                             , sort_field:str = 'create_date') -> [Any]:
+                                             , sort_field:str = 'CREATED_AT') -> [Any]:
         try:
             total = await self.model.find(conditions).count()
         except:
@@ -155,6 +161,70 @@ class Database:
         if documents:
             return documents, pagination
         return [], pagination     
+    
+    async def get_symbol_summary_with_pagination(self
+                                            , conditions: dict = {}
+                                            , page_number=1
+                                            , records_per_page=10
+                                            , pages_per_block=5) -> [Any]:
+        try:
+            # 먼저 모든 유니크한 심볼 목록을 가져옴
+            all_symbols = await self.model.distinct('SYMBOL')
+            all_symbols.sort()  # 알파벳 순 정렬
+
+            # 검색어가 있는 경우
+            if 'SYMBOL' in conditions:
+                filtered_symbols = [s for s in all_symbols if s == conditions['SYMBOL']]
+            # 마켓 필터링
+            elif 'market' in conditions:
+                if conditions['market'] == 'kr':
+                    filtered_symbols = [s for s in all_symbols if s.endswith(('.KS', '.KQ'))]
+                elif conditions['market'] == 'us':
+                    filtered_symbols = [s for s in all_symbols if not s.endswith(('.KS', '.KQ'))]
+                else:
+                    filtered_symbols = all_symbols
+            else:
+                filtered_symbols = all_symbols
+
+            # 페이지네이션 계산
+            total = len(filtered_symbols)
+            pagination = Paginations(
+                total_records=total,
+                current_page=page_number,
+                records_per_page=records_per_page,
+                pages_per_block=pages_per_block
+            )
+
+            # 현재 페이지의 심볼만 선택
+            start_idx = pagination.start_record_number
+            end_idx = start_idx + pagination.records_per_page
+            paged_symbols = filtered_symbols[start_idx:end_idx]
+            
+            # 선택된 심볼들의 최신 데이터 조회
+            results = []
+            for symbol in paged_symbols:
+                doc = await self.model.find_one(
+                    {"SYMBOL": symbol},
+                    sort=[("CREATED_AT", -1)]
+                )
+                if doc:
+                    results.append({
+                        "SYMBOL": doc.SYMBOL,
+                        "CREATED_AT": doc.CREATED_AT
+                    })
+            
+            return results, pagination
+
+        except Exception as e:
+            print(f"Error in get_symbol_summary_with_pagination: {e}")
+            return [], Paginations(
+                total_records=0,
+                current_page=page_number,
+                records_per_page=records_per_page,
+                pages_per_block=pages_per_block
+            )
+
+
 
 
 if __name__ == '__main__':

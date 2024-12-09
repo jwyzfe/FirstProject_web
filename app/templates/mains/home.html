@@ -1,7 +1,7 @@
 {% extends "templates/main_template.html"%}
 
 {% block title %}
-Errors
+SGMN
 {% endblock %}
 <!-- main -->
 {% block main_container %}
@@ -12,31 +12,33 @@ Errors
             Docker를 통해 소스 코드와 데이터베이스를 한곳에서 관리함으로써 개발 환경을 일관되게 유지할 수 있습니다.
             이는 협업이 용이해지고, 빠른 배포와 테스트 환경 구축에 큰 도움.
         </p>
-        <div class="row">
-        <form action="/mains/home">
-            <!-- id -->
-            <div class="col-4">ID : </div>
-            <div class="col-8">
-                <input type="text" name="id" id="" class="form-control" value="{{request.query_params['id']}}">
-            </div>
-            <!-- pw -->
-            <div class="col-4">PW : </div>
-            <div class="col-8">
-                <input type="text" name="pw" id="" class="form-control">
-            </div>
-            <!-- checked -->
-            <div class="col-4">Checked : </div>
-            <div class="col-8">
-                <select name="check" id="" class="form-select">
-                    <option value="car_01" {{'selected' if request.query_params['check'] == 'car_02' else''}}>봉고</option>
-                    <option value="car_02" {{'selected' if request.query_params['check'] == 'car_02' else''}}>그랜저</option>
-                </select>
-            </div>
-            <!-- button -->
-            <div class="col-4">
-                <button class="btn btn-primary">확인</button>
-            </div>
-        </form>
+        <div class="row ">
+        <!--
+            <form action="/mains/home">
+                
+                <div class="col-4">ID : </div>
+                <div class="col-8">
+                    <input type="text" name="id" id="" class="form-control" value="{{request._query_params['id']}}">
+                </div>
+                
+                <div class="col-4">Password : </div>
+                <div class="col-8">
+                    <input type="text" name="pw" id="" class="form-control">
+                </div>
+                
+                <div class="col-4">Checked : </div>
+                <div class="col-8">
+                    <select name="check" id="" class="form-select">
+                        <option value="car_01" {{ 'selected' if request._query_params['check'] == 'car_01' else '' }}>bongo</option>
+                        <option value="car_02" {{ 'selected' if request._query_params['check'] == 'car_02' else '' }}>grander</option>
+                    </select>
+                </div>
+                
+                <div class="col-4">
+                    <button class="btn btn-primary">Continue</button>
+                </div>
+            </form>
+        -->
         </div>
         <!-- YouTube Video Embed with More Rounded Corners 
         <div class="ratio ratio-16x9" style="border-radius: 10px; overflow: hidden;">
