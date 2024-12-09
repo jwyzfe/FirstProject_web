@@ -42,7 +42,7 @@ Article List
       <tr>
         <td>{{pagination.start_record_number + loop.index}}</td>
         <td>
-          <a href="/articles/read/{{article._id}}" class="text-decoration-none">{{article.TITLE | truncate(15, true, '...')}}</a>
+          <a href="/articles/read/{{article.id}}" class="text-decoration-none">{{article.TITLE | truncate(15, true, '...')}}</a>
         </td>
         <td>{{article.DATE}}</td>
         <td>{{ article.CONTENT | truncate(30, true, '...') }}</td> <!--Summary 랑 어떻게 매치 시킬지-->

@@ -1,10 +1,10 @@
-{% extends "templates/main_template.html"%}
+<!-- {% extends "templates/main_template.html"%}
 
 <title>회원 상세보기</title>
-{% block main_container %}
+{% block main_container %} -->
 
 <!-- {{ user }} -->
-<form action="">
+<!-- <form action="">
     <div class="row gap-2 px-5">
         <div class="col-12 row">
             <div class="col-4 row">
@@ -34,4 +34,39 @@
         </div>
     </div>
 </form>
+{% endblock %} -->
+
+{% extends "templates/main_template.html"%}
+
+<title>기사 상세보기</title>
+{% block main_container %}
+
+<form action="">
+    <div class="row gap-2 px-5">
+        <div class="col-12 row">
+            <div class="col-4 row">
+                <label class="form-label col-12">
+                    TITLE : {{ article.TITLE }}
+                </label>
+                <label class="form-label col-12">
+                    DATE : {{ article.DATE }}
+                </label>
+                <label class="form-label col-12">
+                    CONTNET : {{ article.CONTENT }}
+                </label>
+                <label class="form-label col-12">
+                    <a href="{{ article.LINK }}" target="_blank" class="btn btn-primary">원문보기</a>
+                </label>
+            </div>
+            <div class="col-6 row">
+            </div>
+        </div>
+        <div class="col-12 d-flex justify-content-end">
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary" formaction="/articles/list" formmethod="get">List</button>
+            </div>
+        </div>
+    </div>
+</form>
 {% endblock %}
+

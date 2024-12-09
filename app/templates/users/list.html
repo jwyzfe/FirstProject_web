@@ -36,7 +36,7 @@ Article List
       <tr>
         <td>{{pagination.start_record_number + loop.index}}</td>
         <td>
-          <a href="/articles/read/{{article.id}}" class="text-decoration-none">{{article.title}}</a>
+          <a href="/articles/read/{{article._id}}" class="text-decoration-none">{{article.title}}</a>
         </td>
         <td>{{article.date.strftime('%Y.%m.%d')}}</td>
         <td><a href="{{article.link}}" target="_blank">View Source</td>
