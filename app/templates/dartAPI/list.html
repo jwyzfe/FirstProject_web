@@ -1,54 +1,81 @@
 {% extends "templates/main_template.html"%}
 {% block title %}
-Financial Statements
+Financial Statements List
 {% endblock %}
 
 {% block main_container %}
-<form>
-  <div class="row mb-3">
-    <div class="col-2">
-      <select class="form-select" name="key_name">
-        <option value="CORP_CODE" {{ 'selected' if request._query_params.key_name=='CORP_CODE' else '' }}>CORP_CODE</option>
-        <option value="BUSINESS_YEAR" {{ 'selected' if request._query_params.key_name=='BUSINESS_YEAR' else '' }}>BUSINESS_YEAR</option>
-      </select>
-    </div>
-    <div class="col-6">
-      <input class="form-control" placeholder="기업코드 또는 회계연도(4자리) " name="word" value="{{request._query_params.word}}">
-    </div>
-    <div class="col-4">
-      <button type="submit" class="btn btn-primary" formaction="/dartAPI/list" formmethod="get">
-        Search <span class="badge bg-success" id="">{{pagination.total_records}}</span>
-      </button>
+<div class="container-fluid px-4">
+  <!-- 상단 헤더 영역 -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="border-bottom pb-2">Financial Statements</h2>
     </div>
   </div>
 
-  <div class="table-responsive">
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          <th style="width: 5%">No.</th>
-          <th style="width: 35%">기업고유번호</th>
-          <th style="width: 35%">기업명</th>
-          <th style="width: 10%">회계연도</th>
-          <th style="width: 15%">회계처리방식</th>
+  <form>
+    <div class="row mb-3">
+      <div class="col-2">
+        <select class="form-select" name="key_name">
+          <option value="CORP_CODE" {{ 'selected' if request._query_params.key_name=='CORP_CODE' else '' }}>Corporation Code</option>
+          <option value="BUSINESS_YEAR" {{ 'selected' if request._query_params.key_name=='BUSINESS_YEAR' else '' }}>Business Year</option>
+        </select>
+      </div>
+      <div class="col-6">
+        <input class="form-control" placeholder="Enter corporation code or business year (4 digits)" name="word" value="{{request._query_params.word}}">
+      </div>
+      <div class="col-4">
+        <button type="submit" class="btn btn-primary" formaction="/dartAPI/list" formmethod="get">
+          <i class="fas fa-search me-1"></i> Search <span class="badge bg-success">{{pagination.total_records}}</span>
+        </button>
+      </div>
+    </div>
 
-        </tr>
-      </thead>
-      <tbody>
-        {% for comment in comments %}
-        <tr>
-          <td>{{pagination.start_record_number + loop.index}}</td>
-          <td>{{comment.CORP_CODE}}</td>
-          <td class="text-break">
-            <a href="/dartAPI/read/{{comment.id}}" class="text-decoration-none">{{comment.CORP_CODE}}</a>
-          </td>
-          <td>{{comment.BUSINESS_YEAR if comment.BUSINESS_YEAR else '-'}}</td>
-          <td>{{comment.FINANCIAL_STATEMENT_NAME if comment.FINANCIAL_STATEMENT_NAME else '-'}}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+    <div class="card">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th style="width: 5%">No.</th>
+                <th style="width: 25%">Corporation Code</th>
+                <th style="width: 35%">Corporation Name</th>
+                <th style="width: 15%">Business Year</th>
+                <th style="width: 20%">Statement Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for comment in comments %}
+              <tr>
+                <td>{{pagination.start_record_number + loop.index}}</td>
+                <td>{{comment.CORP_CODE}}</td>
+                <td>
+                  <a href="/dartAPI/read/{{comment.id}}" class="text-decoration-none">{{comment.CORP_CODE}}</a>
+                </td>
+                <td>{{comment.BUSINESS_YEAR if comment.BUSINESS_YEAR else '-'}}</td>
+                <td>{{comment.FINANCIAL_STATEMENT_NAME if comment.FINANCIAL_STATEMENT_NAME else '-'}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </form>
+
   {% include 'templates/pagination_template.html' %}
-</form>
+</div>
+
+<!-- Font Awesome CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+  .card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    margin-bottom: 1.5rem;
+  }
+  
+  .btn {
+    padding: 0.5rem 1.5rem;
+  }
+</style>
 {% endblock %}
