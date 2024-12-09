@@ -1,0 +1,61 @@
+{% extends "templates/main_template.html"%}
+{% block title %}
+Member List
+{% endblock %}
+
+{% block main_container %}
+<form>
+  <!-- 검색 항목 추가 필요 -->
+  <div class="row">
+    <div class="col-2">
+      <select class="form-select" name="key_name">
+        <option value="TICKER" {{ 'selected' if request.query_params.key_name=='TICKER' else '' }}>ticker</option>
+        <option value="DATE" {{ 'selected' if request.query_params.key_name=='DATE' else '' }}>date</option>
+        <option value="MACD_HISTOGRAM" {{ 'selected' if request.query_params.key_name=='MACD_HISTOGRAM' else '' }}>macd histogram</option>
+        <option value="RSI" {{ 'selected' if request.query_params.key_name=='RSI' else '' }}>rsi</option>
+      </select>
+    </div>
+    <div class="col-6">
+      <input class="form-control" placeholder="Enter Search!" name="word" value="{{request._query_params.word}}">
+    </div>
+    <div class="col-4">
+      <button type="submit" class="btn btn-primary" formaction="/marketsenti/list" formmethod="get">
+        Search <span class="badge bg-success" id="">{{pagination.total_records}}</span>
+      </button>
+    </div>
+  </div>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>No.</th>
+        <th>TICKER</th>
+        <th>MACD_HISTOGRAM</th>
+        <th>MACD_LINE</th>
+        <th>RSI</th>
+        <th>SIGNAL_LINE</th>
+        <th>DATE</th>
+        <th>CREATE_DATE</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in marketsenti_list|sort(attribute="DATE")|sort(attribute="TICKER", reverse=True) %}
+      <tr>
+        <td>{{pagination.start_record_number + loop.index}}</td>
+        <td>
+          <a href="/users/read/{{user._id}}" class="text-decoration-none">{{user.TICKER}}</a>
+        </td>
+        <td>{{user.MACD_HISTOGRAM}}</td>
+        <td>{{user.MACD_LINE}}</td>
+        <td>{{user.RSI}}</td>
+        <td>{{user.SIGNAL_LINE}}</td>
+        <td>{{user.DATE.strftime('%Y.%m.%d %H:%M')}}</td>
+        <td>{{user.CREATED_AT.strftime('%Y.%m.%d %H:%M')}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endblock %}
+  {% block paginations_container %}
+  {% include 'templates/pagination_template.html' %}
+</form>
+{% endblock %}

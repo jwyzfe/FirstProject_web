@@ -1,0 +1,37 @@
+{% extends "templates/main_template.html"%}
+
+<title>회원 상세보기</title>
+{% block main_container %}
+
+<!-- {{ user }} -->
+<form action="">
+    <div class="row gap-2 px-5">
+        <div class="col-12 row">
+            <div class="col-4 row">
+                <label class="form-label col-12">
+                    Name : {{ user.name}}
+                </label>
+                <label class="form-label col-12">
+                    Email : {{ user.email}}
+                </label>
+                <label class="form-label col-12">
+                    Authority : {{ user.roles}}
+                </label>
+                <label class="form-label col-12">
+                    create_date : {{user.create_date.strftime('%Y.%m.%d %H:%M')}}
+                </label>
+                <label class="form-label col-12">
+                    last_access_date : {{user.last_access_date.strftime('%Y.%m.%d %H:%M')}}
+                </label>
+            </div>
+            <div class="col-6 row">
+            </div>
+        </div>
+        <div class="col-12 d-flex justify-content-end">
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary" formaction="/users/list" formmethod="get">List</button>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
