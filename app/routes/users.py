@@ -93,7 +93,7 @@ from beanie import PydanticObjectId
 
 # 2. 기사 상세 조회
 # /articles/read/{{article.id}}
-@router.get("/articles/read/{object_id}")
+@router.get("/read/{object_id}")
 async def read_article(request:Request, object_id:PydanticObjectId):
     article = await collection_hankyung.get(object_id)
     if article is None:
