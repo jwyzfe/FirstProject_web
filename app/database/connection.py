@@ -9,9 +9,10 @@ from app.models.tossComments import tossComments
 from app.models.dartAPI import dartAPI
 from app.models.stockprice import Stockprice
 from app.models.stocktwits import Stocktwits
-
+from app.models.users import User
+from app.models.marketsenti import Marketsenti
+from app.models.news_yahoo import News_yahoo
 from datetime import datetime
-
 from app.models.users import Hankyung #변경
 
 import os
@@ -20,7 +21,10 @@ class Settings(BaseSettings):
 
     async def initialize_database(self):
         client = AsyncIOMotorClient(self.DATABASE_URL)
-        await init_beanie(database=client.get_default_database(), document_models=[ Stockprice, Stocktwits, tossComments, dartAPI, Hankyung])
+        await init_beanie(database=client.get_default_database(), document_models=[ Stockprice, Stocktwits, tossComments, dartAPI, Hankyung, Marketsenti,News_yahoo])
+
+
+
 
     class Config:
         env_file = os.path.join("app",".env")
@@ -29,25 +33,25 @@ from app.utils.paginations import Paginations
 
 import json
 class Database:
-    def __init__(self, model):
+    def __init__(self, model):  #초기화 시 특정 모델과 연결
         self.model = model
 
-    async def save(self, document):
+    async def save(self, document):     #새 문서를 저장
         result = await document.create()
         return result
 
-    async def get(self, id: PydanticObjectId):
+    async def get(self, id: PydanticObjectId):      #id로 문서를 검색
         doc = await self.model.get(id)
         if doc:
             return doc
         return False
 
-    async def get_all(self, conditions: dict = {}):
+    async def get_all(self, conditions: dict = {}):     #주어진 조건(conditions)을 만족하는 모든 문서를 반환합니다.
         docs = await self.model.find_all(conditions).to_list()
         return docs
 
     # update with params json
-    async def update_withjson(self, id: PydanticObjectId, body: json):
+    async def update_withjson(self, id: PydanticObjectId, body: json):      #json형식의 데이터로 문서를 업데이트
         doc_id = id
 
         # des_body = {k: v for k, v in des_body.items() if v is not None}
@@ -78,7 +82,7 @@ class Database:
         update_doc = await doc.update(update_query)
         return update_doc
 
-    async def delete(self, id: PydanticObjectId):
+    async def delete(self, id: PydanticObjectId):       #특정 id를 가진 문서를 삭제합니다.
         doc = await self.get(id)
         if not doc:
             return False
@@ -86,7 +90,7 @@ class Database:
         return True
 
     # column 값으로 Documents 가져오기
-    async def getbyconditions(self, conditions:dict = {}) -> [Any]:
+    async def getbyconditions(self, conditions:dict = {}) -> [Any]:     #조건을 만족하는 문서의 개수를 반환합니다.
         document = await self.model.find_one(conditions)  # find({})
         return document    
 
@@ -105,10 +109,12 @@ class Database:
         return count    
 
     # column 값으로 aggregate해 여러 Documents 가져오기
+    #MongoDB의 aggregate 명령을 사용해 조건에 맞는 문서를 반환
     async def aggregatebyconditions(self, conditions:list) -> [Any]:
         documents = await self.model.aggregate(conditions).to_list()  # find({})
         return documents    
-
+#조건에 맞는 문서를 페이지네이션 방식으로 조회합니다.
+    #페이지 수, 페이지당 문서 수, 정렬 방향(+ 또는 -) 등을 설정합니다.
     async def aggregatebyconditionswithpagination(self, conditions: dict, page_number=1, records_per_page=10, pages_per_block=5, sorted='-', sort_field='create_date'):
         total = 0
         try:
@@ -147,9 +153,9 @@ class Database:
     # column 값으로 여러 Documents with pagination 가져오기
     async def getsbyconditionswithpagination(self
                                              , conditions:dict, page_number=1
-                                             , records_per_page=10, pages_per_block=5
+                                             , records_per_page=10, pages_per_block=10
                                              , sorted = '-'
-                                             , sort_field:str = 'CREATED_AT') -> [Any]:
+                                             , sort_field:str = 'create_date', ) -> [Any]:
         try:
             total = await self.model.find(conditions).count()
         except:

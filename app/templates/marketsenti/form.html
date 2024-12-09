@@ -1,0 +1,60 @@
+{% extends "templates/main_template.html"%}
+
+<title>회원 상세보기</title>
+{% block main_container %}
+{% set is_admin = ("ADMIN" in request.state.user.roles) %}
+{% set is_owner = (request.state.user.id == user.id | string) %}
+
+<form action="" method="post">
+    <div class="row gap-2 px-5">
+        <div class="col-2">
+        </div>
+        <div class="col-8 row">
+            <div class="col-12 row">
+                <div class="col-6 row">
+                    <img src="{{ user.picture }}" alt="profile" class="rounded-circle">
+                </div>
+                <div class="col-6 row">
+                    <label class="form-label col-12">
+                        Name : {{ user.name}}
+                    </label>
+                    <div class="form-group col-12">
+                        <label class="form-label" for="email">Email: <span class="text-primary small">(Fill Your
+                                Email)</span></label>
+                        <input type="email" class="form-control" id="email" name="email"
+                            value="{{user.email if '@' in user.email else ''}}" required>
+                        {% if error_message %}
+                        <div class="text-danger small mt-1">
+                            {{ error_message }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <label class="form-label col-12">
+                        Authority : {{ user.roles}}
+                    </label>
+                    <label class="form-label col-12">
+                        create_date : {{user.create_date.strftime('%Y.%m.%d %H:%M')}}
+                    </label>
+                    <label class="form-label col-12">
+                        last_access_date : {{user.last_access_date.strftime('%Y.%m.%d %H:%M')}}
+                    </label>
+                </div>
+            </div>
+            <div class="col-12 d-flex justify-content-end">
+                <div class="form-group">
+                    {% if is_owner or is_admin %}
+                    <button type="submit" class="btn btn-danger" formaction="/users/{{user.id}}">
+                        Delete
+                    </button>
+                    <button type="submit" class="btn btn-primary" formaction="/users/update/{{user.id}}">
+                        Update
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-2 row">
+        </div>
+    </div>
+</form>
+{% endblock %}
