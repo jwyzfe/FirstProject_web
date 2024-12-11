@@ -4,11 +4,12 @@ from beanie import init_beanie, PydanticObjectId
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings
-
 from app.models.tossComments import tossComments
 from app.models.dartAPI import dartAPI
 from app.models.stockprice import Stockprice
 from app.models.stocktwits import Stocktwits
+from app.models.youtubeComments import youtubeComments
+from app.models.ESG import ESG
 
 from datetime import datetime
 

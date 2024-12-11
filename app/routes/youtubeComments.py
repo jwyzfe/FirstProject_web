@@ -1,13 +1,13 @@
 from app.database.connection import Database
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.templating import Jinja2Templates
-from app.models.dartAPI import dartAPI
+from app.models.youtubeComments import youtubeComments
 from typing import Optional
 from beanie import PydanticObjectId
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates/")
-collection_user = Database(dartAPI)
+collection_user = Database(youtubeComments)
 
 @router.get("/list/{page_number}")
 @router.get("/list")
@@ -20,28 +20,38 @@ async def list(request: Request, page_number: Optional[int] = 1):
         word = user_dict['word']
         key_name = user_dict['key_name']
         
-        if key_name == 'CORP_CODE':
+        if key_name == 'SYMBOL':
+            # Symbol 검색: 대소문자 구분 없이 정확한 매칭
             conditions = {
                 key_name: {"$regex": f"^{word}$", "$options": "i"}
             }
-        elif key_name == 'BUSINESS_YEAR':
+        elif key_name == 'COMMENT':
+            # Comment 검색: 대소문자 구분 없이 부분 매칭
             conditions = {
                 key_name: {"$regex": word, "$options": "i"}
             }
 
-    # getsbyconditionswithpagination 메서드 사용
+    # 페이지네이션과 함께 데이터 조회
     comment_list, pagination = await collection_user.getsbyconditionswithpagination(
-        conditions=conditions,
-        page_number=page_number,
-        records_per_page=10,  # 한 페이지당 보여줄 레코드 수
-        pages_per_block=5     # 한 블록당 보여줄 페이지 수
+        conditions, page_number
     )
 
     return templates.TemplateResponse(
-        name="dartAPI/list.html",
+        name="tossComments/list.html",
         context={
             'request': request,
             'comments': comment_list,
             'pagination': pagination
+        }
+    )
+
+@router.get("/read/{object_id}")
+async def read(request: Request, object_id: PydanticObjectId):
+    comment = await collection_user.get(object_id)
+    return templates.TemplateResponse(
+        name="tossComments/read.html",
+        context={
+            'request': request,
+            'comment': comment
         }
     )
