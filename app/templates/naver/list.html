@@ -1,0 +1,59 @@
+{% extends "templates/main_template.html"%}
+{% block title %}
+Naver_reply List
+{% endblock %}
+
+{% block main_container %}
+<form>
+  <!-- 검색 항목 추가 필요 -->
+  <div class="row">
+    <div class="col-2">
+      <select class="form-select" name="key_name">
+        <option value="제목" {{ 'selected' if request.query_params.key_name=='제목' else '' }}>제목</option>
+        <!-- 바뀌기전 <option value="title" {{ 'selected' if request._query_params.key_name=='title' else '' }}>Title</option> -->
+        <option value="날짜" {{ 'selected' if request.query_params.key_name=='날짜' else '' }}>날짜</option>
+        <!-- 바뀌기전 <option value="date" {{ 'selected' if request._query_params.key_name=='date' else '' }}>Date</option> -->
+        <option value="내용" {{ 'selected' if request.query_params.key_name=='내용' else '' }}>내용</option>
+        <!-- 바뀌기전 <option value="no." {{ 'selected' if request._query_params.key_name=='no.' else '' }}>No.</option> -->
+      </select>
+    </div>
+    <div class="col-6">
+      <input class="form-control" placeholder="Enter Search!" name="word" value="{{ request.query_params.get('word', '') }}">
+      <!-- 바뀌기전 <input class="form-control" placeholder="Enter Search!" name="word" value="{{request.query_params.word}}"> -->
+    </div>
+    <div class="col-4">
+      <button type="submit" class="btn btn-primary" formaction="/naver_router/list" formmethod="get">
+        Search <span class="badge bg-success" id="">{{pagination['total_records']}}</span>
+      </button>
+    </div>
+  </div>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>제목</th>
+        <th>날짜</th>
+        <th>내용</th>
+        <th>추천</th>
+        <th>비추천</th>
+        <th>조회수</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for naver_router in naver %}
+      <tr>
+        <td>{{pagination.start_record_number + loop.index}}</td>
+        <td>
+          <a href="/naver_router/read/{{naver.id}}" class="text-decoration-none">{{naver.제목 | truncate(15, true, '...')}}</a>
+        </td>
+        <td>{{naver.DATE}}</td>
+        <td>{{ naver.CONTENT | truncate(30, true, '...') }}</td>
+        <td><a href="{{naver.LINK}}" target="_blank">{{naver.LINK}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endblock %}
+  {% block paginations_container %}
+  {% include 'templates/pagination_template.html' %}
+</form>
+{% endblock %}

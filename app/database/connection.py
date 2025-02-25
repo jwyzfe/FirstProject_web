@@ -13,6 +13,7 @@ from app.models.stocktwits import Stocktwits
 from datetime import datetime
 
 from app.models.users import Hankyung #변경
+from app.models.naver_reply import Naver_reply
 
 import os
 class Settings(BaseSettings):
@@ -20,7 +21,7 @@ class Settings(BaseSettings):
 
     async def initialize_database(self):
         client = AsyncIOMotorClient(self.DATABASE_URL)
-        await init_beanie(database=client.get_default_database(), document_models=[ Stockprice, Stocktwits, tossComments, dartAPI, Hankyung])
+        await init_beanie(database=client.get_default_database(), document_models=[ Stockprice, Stocktwits, tossComments, dartAPI, Hankyung, Naver_reply])
 
     class Config:
         env_file = os.path.join("app",".env")
